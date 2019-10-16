@@ -18,6 +18,8 @@ public class RightHand {
 	private Color color;
 	private int xloc, yloc; // location
 	
+	private ConductingPattern pattern = new FourFourPattern(60, 400, 100); // default
+	
 	
 	// constructors
 	public RightHand() { // default values
@@ -74,6 +76,12 @@ public class RightHand {
 	}
 	public int getY() {
 		return yloc;
+	}
+	public void setPattern(ConductingPattern pat) {
+		pattern = pat;
+	}
+	public ConductingPattern getPattern() {
+		return pattern;
 	}
 
 }
