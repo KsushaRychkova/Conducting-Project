@@ -5,14 +5,18 @@
  */
 
 
-public class ConductingPattern {
+public abstract class ConductingPattern {
 
 	
 	// class variables
-	private int bpMin; // beats per minute
-	private int bpBar; // beats per bar
+	protected int bpMin; // beats per minute
+	protected int bpBar; // beats per bar
 	
-	public ConductingPattern() {
+	public ConductingPattern(int bpM) {
+		bpMin = bpM;
+	}
+	
+	public void draw() {
 		
 	}
 	
