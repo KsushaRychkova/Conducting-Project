@@ -16,22 +16,22 @@ import java.awt.event.ActionListener;
 
 public class MyPanel extends JPanel implements ActionListener {
 	
-	// global variables
-    private final int RIGHT_HAND_DIAMETER = 50;
-    //private final int INITIAL_X = 200;
-    //private final int INITIAL_Y = 300;
-    private final int DELAY = 40; // 40 millisecond delay = 25 fps
-    private final int MOVEMENT_RADIUS = 100; // radius of the circular path we move on
-    private final int MOVEMENT_CENTER_X = 300;
-    private final int MOVEMENT_CENTER_Y = 300;
+	// constants
+    private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    
+    // right hand coordinates
+    private final int RIGHT_HAND_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
+    private final int RIGHT_HAND_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
+    private final int RIGHT_HAND_WINDOW_WIDTH = 400; // width of right hand's window
+    private final int RIGHT_HAND_WINDOW_HEIGHT = 400; // height of right hand's window
     
     // class variables
     private Image orchestra;
-    private Thread animator; // not sure if we need this
-    private int x, y; // the location of the right hand
     private RightHand rightHand;
+    private double fps;
+    private int bpMin;
+    private int bpBar;
 
-	private double theta;
 	
 	
 	public MyPanel() {
@@ -40,7 +40,7 @@ public class MyPanel extends JPanel implements ActionListener {
 		
 	}
 	
-    private void loadImage() {
+    private void loadImages() {
 
         //ImageIcon ii = new ImageIcon("src/resources/star.png");
         //star = ii.getImage();
@@ -48,26 +48,25 @@ public class MyPanel extends JPanel implements ActionListener {
     
     private void initPanel() {
 
+    	// variables
+		fps = 1000.0 / (double)DELAY;
+		bpMin = 60; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
+		bpBar = 4; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
+    	
     	// background
     	setOpaque(true);
 		setBackground(Color.BLACK);
 		
-		// variables
-		//x = INITIAL_X;
-		//y = INITIAL_Y;
-		x = MOVEMENT_CENTER_X - MOVEMENT_RADIUS;
-		y = MOVEMENT_CENTER_Y;
-		theta = 0; // initialize at 0
-		
-		loadImage(); // this is only if we have images we need to load up
-		
-		Color handColor = new Color(102, 255, 255);
-		rightHand = new RightHand(RIGHT_HAND_DIAMETER, handColor, x, y);
+		// images
+		loadImages(); // this is only if we have images we need to load up
 		
 		// timer stuff
-    	Timer timer = new Timer(15, this);
+    	Timer timer = new Timer(DELAY, this);
     	timer.start();
-		
+    	
+    	// right hand
+    	Color rightHandColor = new Color(102, 255, 255);
+		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor);
     	
     }
     
@@ -75,10 +74,12 @@ public class MyPanel extends JPanel implements ActionListener {
     private void update() {
     	
     	// moving in a circle
-    	theta += 0.05;
-    	x = (int) (MOVEMENT_RADIUS * Math.cos(theta) + MOVEMENT_CENTER_X);
-    	y = (int) (MOVEMENT_RADIUS * Math.sin(theta) + MOVEMENT_CENTER_Y);
-    	rightHand.setLoc(x, y);
+    	//theta += 0.05;
+    	//x = (int) (MOVEMENT_RADIUS * Math.cos(theta) + MOVEMENT_CENTER_X);
+    	//y = (int) (MOVEMENT_RADIUS * Math.sin(theta) + MOVEMENT_CENTER_Y);
+    	//rightHand.setLoc(x, y);
+    	
+    	rightHand.update(); // right hand takes care of the updates
     	
     }
 	

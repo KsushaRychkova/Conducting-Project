@@ -33,7 +33,7 @@ public class MyWindow extends JFrame {
         add(panel);
 
         setSize(WIDTH, HEIGHT);
-        setTitle("Animation Test");
+        setTitle("Conducting Animation");
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

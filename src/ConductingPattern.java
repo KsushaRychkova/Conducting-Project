@@ -11,7 +11,9 @@ public abstract class ConductingPattern {
 	// class variables
 	protected int bpMin; // beats per minute
 	protected int bpBar; // beats per bar
-	protected double beatLength; // length of one beat, in milliseconds
+	protected double beatLength; // length of one beat, in milliseconds; depends on bpMin
+	protected double fps;
+	protected double framesperBeat; // length of one beat in frames
 	
 	protected int xstart; // starting x coordinate
 	protected int ystart; // starting y coordinate
@@ -19,7 +21,7 @@ public abstract class ConductingPattern {
 	protected int xloc; // current x coordinate
 	protected int yloc; // current y coordinate
 	
-	public ConductingPattern(int bpM, int xstart, int ystart) {
+	public ConductingPattern(double fps, int bpM, int xstart, int ystart) {
 		bpMin = bpM;
 		beatLength = 60000.0 / (double)bpMin; // 60,000 milliseconds in a minute
 		this.xstart = xstart;

@@ -12,8 +12,8 @@ public class FourFourPattern extends ConductingPattern {
 	private int beatNumber;
 	
 	
-	public FourFourPattern(int bpM, int xstart, int ystart) {
-		super(bpM, xstart, ystart);
+	public FourFourPattern(double fps, int bpM, int xstart, int ystart) {
+		super(fps, bpM, xstart, ystart);
 		bpBar = BEATS_PER_BAR;
 		beatNumber = 0; // starting beat number; MAKE SURE TO CHANGE THIS IF NEEDED
 	}
