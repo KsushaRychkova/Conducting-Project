@@ -19,11 +19,10 @@ public class MyPanel extends JPanel implements ActionListener {
 	// constants
     private final int DELAY = 20; // 20 millisecond delay = 50 fps
     
-    // right hand coordinates
-    private final int RIGHT_HAND_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
-    private final int RIGHT_HAND_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
-    private final int RIGHT_HAND_WINDOW_WIDTH = 400; // width of right hand's window
-    private final int RIGHT_HAND_WINDOW_HEIGHT = 400; // height of right hand's window
+    // right hand coordinates - passed to RightHand in constructor
+    private final int RH_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
+    private final int RH_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
+    private final int RH_WINDOW_SCALE = 4; // right hand window is scaled by this value
     
     // class variables
     private Image orchestra;
@@ -66,7 +65,7 @@ public class MyPanel extends JPanel implements ActionListener {
     	
     	// right hand
     	Color rightHandColor = new Color(102, 255, 255);
-		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor);
+		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, RH_WINDOW_SCALE);
     	
     }
     

@@ -14,13 +14,13 @@ import java.awt.geom.Ellipse2D;
 public class RightHand {
 	
 	// constants
-	private final int DIAMETER = 50; // NOT RELATIVE diameter of circle
+	private final int DIAMETER = 20; // diameter of circle
 	private final int WINDOW_LENGTH = 100; // relative sizes, will be scaled appropriately in MyPanel
 	private final int WINDOW_HEIGHT = 100;
-	private final int INITIAL_X = 50; // initial (relative) coordinates we need to get back to
-	private final int INITIAL_Y = 10;
 
 	// initial variables that probably won't be changed
+	private int xOffset, yOffset;
+	private int scale;
 	private int bpMin; // beats per minute
 	private int bpBar; // beats per bar
 	private double fps;
@@ -29,21 +29,34 @@ public class RightHand {
 	// variables that will be changed
 	private int xloc, yloc; // current location; NOTE: these locations are only with respect to the window
 	private Color color;
-	private int currentBeat;
-	private int currentFrame; // the frame we are on of the beat (reset to 0 every time we go to next beat)
+	
+	private RightHandPattern pattern;
 	
 	
 	// constructors
-	public RightHand(double fps, int bpM, int bpB, Color color) {
+	public RightHand(double fps, int bpM, int bpB, Color color, int x0, int y0, int scale) {
 		this.fps = fps;
 		bpMin = bpM;
 		bpBar = bpB;
 		this.color = color;
+		xOffset = x0;
+		yOffset = y0;
+		this.scale = scale;
 		
 		fpBeat = (int)(fps * 60.0 / (double)bpMin);
 		
-		currentBeat = 0; // initialize at 0
-		currentFrame = 0; // initialize at 0
+		switch(bpBar) { // decide which pattern to use based off of the beats per bar
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
+			case 4:
+				pattern = new FourFourPattern(fpBeat);
+				break;
+		}
+		
 	}
 	
 	
@@ -51,40 +64,19 @@ public class RightHand {
 	// main methods
 	public void update() {
 		
-		// TEMPORARY: THIS IS ONLY FOR 4/4 TIME SIGNATURE
-		switch(currentBeat) {
-		
-			case 0: // beat 0 moves from initial point straight down
-				xloc = xloc; // xloc unchanged since we are moving along y only
-				yloc = (int)( Math.sin(2.0 * Math.PI * (double)currentFrame / (double)fpBeat) );
-			case 1: // beat 1 moves from beat 0 loc to the left
-				xloc = xloc;
-				yloc = yloc;
-			case 2: // beat 2 moves from beat 1 loc to the far right
-				xloc = xloc;
-				yloc = yloc;
-			case 3: // beat 3 moves from beat 2 loc up and left to reach initial point
-				xloc = xloc;
-				yloc = yloc;
-		}
+		pattern.update();
+		xloc = pattern.getX();
+		yloc = pattern.getY();
 		
 	}
 	public void draw(Graphics g) {
 		
 		g.setColor(color);
-		g.fillOval(xloc, yloc, DIAMETER, DIAMETER);
+		g.fillOval(xOffset+scale*xloc, yOffset+scale*yloc, DIAMETER, DIAMETER);
 		
 	}
 	
 	
-	
-	
-	// internal functions
-	private void incBeatNum() {
-		currentBeat++;
-		currentBeat = currentBeat % bpBar;
-		currentFrame = 0; // reset current frame back to 0
-	}
 	
 	
 	// get and set
@@ -112,6 +104,10 @@ public class RightHand {
 	}
 	public int getY() {
 		return yloc;
+	}
+	public void setbpM(int bpM) {
+		bpMin = bpM;
+		fpBeat = (int)(fps * 60.0 / (double)bpMin);
 	}
 
 }
