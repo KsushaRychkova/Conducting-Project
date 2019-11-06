@@ -9,18 +9,20 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class RightHand {
 	
 	// constants
 	private final int DIAMETER = 20; // diameter of circle
-	private final int WINDOW_LENGTH = 100; // relative sizes, will be scaled appropriately in MyPanel
-	private final int WINDOW_HEIGHT = 100;
+	private final int WINDOW_LENGTH = 300; // relative sizes, will be scaled appropriately in MyPanel
+	private final int WINDOW_HEIGHT = 300;
+	private final int TRAIL_LIMIT = 50; // the number of previous circle positions to be stored in trail
 
 	// initial variables that probably won't be changed
 	private int xOffset, yOffset;
-	private int scale;
 	private int bpMin; // beats per minute
 	private int bpBar; // beats per bar
 	private double fps;
@@ -30,23 +32,29 @@ public class RightHand {
 	private int xloc, yloc; // current location; NOTE: these locations are only with respect to the window
 	private Color color;
 	
+	// variables to do with the trail
+	private Queue<Circle> trail;
+	private Boolean queueFull;
+	private Color bgColor;
+	
 	private RightHandPattern pattern;
 	
 	
 	// constructors
-	public RightHand(double fps, int bpM, int bpB, Color color, int x0, int y0, int scale) {
+	public RightHand(double fps, int bpM, int bpB, Color color, int x0, int y0, Color bg) {
 		this.fps = fps;
 		bpMin = bpM;
 		bpBar = bpB;
 		this.color = color;
 		xOffset = x0;
 		yOffset = y0;
-		this.scale = scale;
+		bgColor = bg;
 		
 		fpBeat = (int)(fps * 60.0 / (double)bpMin);
 		
 		switch(bpBar) { // decide which pattern to use based off of the beats per bar
 			case 1:
+				pattern = new CirclePattern(fpBeat);
 				break;
 			case 2:
 				break;
@@ -56,6 +64,9 @@ public class RightHand {
 				pattern = new FourFourPattern(fpBeat);
 				break;
 		}
+		
+		trail = new LinkedList<>();
+		queueFull = false;
 		
 	}
 	
@@ -71,12 +82,41 @@ public class RightHand {
 	}
 	public void draw(Graphics g) {
 		
+		trail.add(new Circle(color, DIAMETER, xloc, yloc)); // add new circle to the end of the queue
+		if(!queueFull) {
+			if(trail.size() >= TRAIL_LIMIT) queueFull = true;
+		}
+		else{ // only remove members of the queue if the queue is full
+			trail.remove();
+		}
+		
+		// draw each circle in the trail
+		int stepnum = 0;
+		for(Circle circle : trail) {
+			g.setColor(darken(circle.getColor(), stepnum));
+			g.fillOval(xOffset+circle.getXloc(), yOffset+circle.getYloc(), circle.getDiameter(), circle.getDiameter());
+			stepnum++;
+		}
+		
+		/*
 		g.setColor(color);
 		g.fillOval(xOffset+scale*xloc, yOffset+scale*yloc, DIAMETER, DIAMETER);
+		*/
 		
 	}
 	
-	
+	// other methods
+	private Color darken(Color color, int stepnum) { // creates the right color for the step in the gradient
+		
+		double percent = (double)stepnum / (double)TRAIL_LIMIT;
+		int r = (int)((double)color.getRed() * percent + (double)bgColor.getRed() * (1.0 - percent));
+		int g = (int)((double)color.getGreen() * percent + (double)bgColor.getGreen() * (1.0 - percent));
+		int b = (int)((double)color.getBlue() * percent + (double)bgColor.getBlue() * (1.0 - percent));
+		
+		Color result = new Color(r, g, b);
+		return result;
+		
+	}
 	
 	
 	// get and set

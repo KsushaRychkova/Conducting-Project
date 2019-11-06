@@ -7,7 +7,7 @@
 
 public abstract class RightHandPattern {
 	
-	protected final int INITIAL_X = 50; // initial (relative) coordinates we need to get back to
+	protected final int INITIAL_X = 150; // initial (relative) coordinates we need to get back to
 	protected final int INITIAL_Y = 0;
 	
 	protected int fpBeat; // frames per beat

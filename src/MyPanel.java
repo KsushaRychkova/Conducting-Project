@@ -18,11 +18,12 @@ public class MyPanel extends JPanel implements ActionListener {
 	
 	// constants
     private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    private final Color BG_COLOR = Color.BLACK;
     
     // right hand coordinates - passed to RightHand in constructor
     private final int RH_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
     private final int RH_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
-    private final int RH_WINDOW_SCALE = 4; // right hand window is scaled by this value
+    //private final int RH_WINDOW_SCALE = 2; // right hand window is scaled by this value
     
     // class variables
     private Image orchestra;
@@ -54,7 +55,7 @@ public class MyPanel extends JPanel implements ActionListener {
     	
     	// background
     	setOpaque(true);
-		setBackground(Color.BLACK);
+		setBackground(BG_COLOR);
 		
 		// images
 		loadImages(); // this is only if we have images we need to load up
@@ -65,18 +66,12 @@ public class MyPanel extends JPanel implements ActionListener {
     	
     	// right hand
     	Color rightHandColor = new Color(102, 255, 255);
-		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, RH_WINDOW_SCALE);
+		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
     	
     }
     
     // this is the method where we make changes to the variables at every frame
     private void update() {
-    	
-    	// moving in a circle
-    	//theta += 0.05;
-    	//x = (int) (MOVEMENT_RADIUS * Math.cos(theta) + MOVEMENT_CENTER_X);
-    	//y = (int) (MOVEMENT_RADIUS * Math.sin(theta) + MOVEMENT_CENTER_Y);
-    	//rightHand.setLoc(x, y);
     	
     	rightHand.update(); // right hand takes care of the updates
     	
@@ -86,7 +81,7 @@ public class MyPanel extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 		
 		super.paintComponent(g);
-		setBackground(Color.BLACK);
+		setBackground(BG_COLOR);
 		rightHand.draw(g);
 		
 	}

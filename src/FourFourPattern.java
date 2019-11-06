@@ -27,19 +27,19 @@ public class FourFourPattern extends RightHandPattern {
 		
 			case 0: // beat 0 moves from initial point straight down
 				xloc = xloc; // xloc unchanged since we are moving along y only
-				yloc = (int)( -50.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 50.0); // start at 0, end at 100
+				yloc = (int)( -150.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 150.0); // start at 0, end at 300
 				break;
 			case 1: // beat 1 moves from beat 0 loc to the left
-				xloc = (int)( 25.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 25.0); // start at 50, end at 0
-				yloc = (int)( 25.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 75.0); // start at 100, end at 50
+				xloc = (int)( 75.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 75.0); // start at 150, end at 0
+				yloc = (int)( 75.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 225.0); // start at 300, end at 150
 				break;
 			case 2: // beat 2 moves from beat 1 loc to the far right
-				xloc = (int)( -50.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 50.0); // start at 0, end at 100
+				xloc = (int)( -150.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 150.0); // start at 0, end at 300
 				yloc = yloc; // yloc unchanged
 				break;
 			case 3: // beat 3 moves from beat 2 loc up and left to reach initial point
-				xloc = (int)( 25.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 75.0); // start at 100, end at 50
-				yloc = (int)( 25.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 25.0); // start at 50, end at 0
+				xloc = (int)( 75.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 225.0); // start at 300, end at 150
+				yloc = (int)( 75.0 * Math.cos( Math.PI * (double)frameNum / (double)fpBeat) + 75.0); // start at 150, end at 0
 				break;
 		}
 		

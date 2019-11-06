@@ -12,15 +12,16 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		/*
+		
 		EventQueue.invokeLater(() -> {
 			MyWindow window = new MyWindow();
             window.setVisible(true);
         });
-		*/
 		
+		/*
 		MyWindow window = new MyWindow();
 		window.setVisible(true);
+		*/
 			
 	}
 	
