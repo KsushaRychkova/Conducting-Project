@@ -14,7 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class MyPanel extends JPanel implements ActionListener {
+public class MyPanel extends JPanel implements Runnable {
 	
 	// constants
     private final int DELAY = 20; // 20 millisecond delay = 50 fps
@@ -31,6 +31,7 @@ public class MyPanel extends JPanel implements ActionListener {
     private double fps;
     private int bpMin;
     private int bpBar;
+    private Thread myThread;
 
 	
 	
@@ -59,11 +60,11 @@ public class MyPanel extends JPanel implements ActionListener {
 		
 		// images
 		loadImages(); // this is only if we have images we need to load up
-		
+		/*
 		// timer stuff
     	Timer timer = new Timer(DELAY, this);
     	timer.start();
-    	
+    	*/
     	// right hand
     	Color rightHandColor = new Color(102, 255, 255);
 		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
@@ -86,7 +87,47 @@ public class MyPanel extends JPanel implements ActionListener {
 		
 	}
 	
+	@Override
+    public void addNotify() { // this automatically calls run()
+        super.addNotify();
 
+        myThread = new Thread(this);
+        myThread.start();
+    }
+	
+	@Override
+	public void run() {
+		
+		long beforeTime, timeDiff, sleep;
+		
+		beforeTime = System.currentTimeMillis();
+		
+		while (true) {
+
+            update();
+            repaint();
+
+            timeDiff = System.currentTimeMillis() - beforeTime; // how long it took us to perform update and repaint
+            sleep = DELAY - timeDiff; // how much longer we need to wait for the frame to be up
+
+            if (sleep < 0) { // if the update and repaint took longer than the delay, do this
+                // don't do anything for now
+            }
+                
+            try {
+				Thread.sleep(sleep);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+            beforeTime = System.currentTimeMillis(); // set the beforetime to what it is at the end of the frame, to be used in the next one
+        }
+		
+	}
+	
+	
+/*
 	@Override
 	public void actionPerformed(ActionEvent e) { // the action is the timer reaching each delay point
 
@@ -94,6 +135,6 @@ public class MyPanel extends JPanel implements ActionListener {
 		repaint();
 		
 	}
-	
+*/	
 	
 }
