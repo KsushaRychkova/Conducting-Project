@@ -52,7 +52,7 @@ public class MyPanel extends JPanel implements Runnable {
     	// variables
 		fps = 1000.0 / (double)DELAY;
 		bpMin = 60; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
-		bpBar = 4; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
+		bpBar = 2; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
     	
     	// background
     	setOpaque(true);
@@ -60,11 +60,7 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		// images
 		loadImages(); // this is only if we have images we need to load up
-		/*
-		// timer stuff
-    	Timer timer = new Timer(DELAY, this);
-    	timer.start();
-    	*/
+		
     	// right hand
     	Color rightHandColor = new Color(102, 255, 255);
 		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
@@ -127,14 +123,6 @@ public class MyPanel extends JPanel implements Runnable {
 	}
 	
 	
-/*
-	@Override
-	public void actionPerformed(ActionEvent e) { // the action is the timer reaching each delay point
-
-		update();
-		repaint();
-		
-	}
-*/	
+	
 	
 }

@@ -54,11 +54,13 @@ public class RightHand {
 		
 		switch(bpBar) { // decide which pattern to use based off of the beats per bar
 			case 1:
-				pattern = new CirclePattern(fpBeat);
+				
 				break;
 			case 2:
+				pattern = new TwoFourPattern(fpBeat);
 				break;
 			case 3:
+				pattern = new ThreeFourPattern(fpBeat);
 				break;
 			case 4:
 				pattern = new FourFourPattern(fpBeat);
@@ -112,6 +114,9 @@ public class RightHand {
 		int r = (int)((double)color.getRed() * percent + (double)bgColor.getRed() * (1.0 - percent));
 		int g = (int)((double)color.getGreen() * percent + (double)bgColor.getGreen() * (1.0 - percent));
 		int b = (int)((double)color.getBlue() * percent + (double)bgColor.getBlue() * (1.0 - percent));
+		
+		//int a = (int)((percent) * 255.0); // alpha value is opacity
+		//Color result = new Color(color.getRed(), color.getGreen(), color.getBlue(), a);
 		
 		Color result = new Color(r, g, b);
 		return result;
