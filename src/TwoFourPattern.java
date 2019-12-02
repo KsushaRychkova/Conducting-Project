@@ -10,7 +10,7 @@ public class TwoFourPattern extends RightHandPattern {
 	private final int BEATS_PER_BAR = 2;
 	
 	
-	public TwoFourPattern(int fpB) {
+	public TwoFourPattern(double fpB) {
 		super(fpB);
 		bpBar = BEATS_PER_BAR;
 		beatNum = 0; // starting beat number; MAKE SURE TO CHANGE THIS IF NEEDED
@@ -19,12 +19,12 @@ public class TwoFourPattern extends RightHandPattern {
 	@Override
 	void update() {
 		
-		if(frameNum >= fpBeat) {
+		if(frameNum >= fpBeatInt) {
 			incBeatNum();
 		}
 		
 		// t is a variable to make it easier to follow the math. It also represents the speed at which the xlocs and ylocs change.
-		double t = Math.cos( Math.PI * (double)frameNum / (double)fpBeat);
+		double t = Math.cos( Math.PI * (double)frameNum / (double)fpBeatInt);
 		
 		// saving xloc as a double so we can use it to calculate yloc
 		double x;
@@ -32,7 +32,7 @@ public class TwoFourPattern extends RightHandPattern {
 		switch(beatNum) {
 		
 			case 0: // beat 0 moves from initial point straight down, then curves right
-				if( (double)frameNum / (double)fpBeat <= 0.5 ) { // first half: straight down
+				if( (double)frameNum / (double)fpBeatInt <= 0.5 ) { // first half: straight down
 					xloc = xloc; // xloc unchanged since we are moving along y only; start at 150, end at 150
 					yloc = (int)( -200.0 * t + 200.0); // start at 0, end at 400** (since this is half total time of the beat, it will land halfway)
 				}
@@ -50,6 +50,7 @@ public class TwoFourPattern extends RightHandPattern {
 		}
 		
 		frameNum++;
+		totalframes++;
 		
 	}
 	

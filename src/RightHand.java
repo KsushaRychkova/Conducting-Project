@@ -26,7 +26,7 @@ public class RightHand {
 	private int bpMin; // beats per minute
 	private int bpBar; // beats per bar
 	private double fps;
-	private int fpBeat; // length of one beat in frames = fps * 60 / bpmin
+	private double fpBeat; // length of one beat in frames = fps * 60 / bpmin
 	
 	// variables that will be changed
 	private int xloc, yloc; // current location; NOTE: these locations are only with respect to the window
@@ -50,7 +50,7 @@ public class RightHand {
 		yOffset = y0;
 		bgColor = bg;
 		
-		fpBeat = (int)(fps * 60.0 / (double)bpMin);
+		fpBeat = fps * 60.0 / (double)bpMin;
 		
 		switch(bpBar) { // decide which pattern to use based off of the beats per bar
 			case 1:
