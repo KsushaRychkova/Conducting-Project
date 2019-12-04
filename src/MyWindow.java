@@ -6,30 +6,25 @@
 
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.util.List;
 
 
 
-public class MyWindow extends JFrame {
+public class MyWindow extends JFrame implements Runnable {
 	
 	// global variables
 	private final int WIDTH = 900;
 	private final int HEIGHT = 600;
 	
-	public MyWindow() {
+	public MyWindow(List<MusicPart> partList) {
 		
-		initUI();
+		initUI(partList);
 		
 	}
 	
-	private void initUI() {
+	private void initUI(List<MusicPart> partList) {
 		
-        MyPanel panel = new MyPanel();
+        MyPanel panel = new MyPanel(partList);
         add(panel);
 
         setSize(WIDTH, HEIGHT);
@@ -38,6 +33,10 @@ public class MyWindow extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+	}
+	
+	public void run() {
+		setVisible(true);
 	}
 
 	

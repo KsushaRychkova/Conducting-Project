@@ -12,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 public class MyPanel extends JPanel implements Runnable {
@@ -35,9 +36,9 @@ public class MyPanel extends JPanel implements Runnable {
 
 	
 	
-	public MyPanel() {
+	public MyPanel(List<MusicPart> partList) {
 		
-		initPanel();
+		initPanel(partList);
 		
 	}
 	
@@ -47,12 +48,17 @@ public class MyPanel extends JPanel implements Runnable {
         //star = ii.getImage();
     }
     
-    private void initPanel() {
+    private void initPanel(List<MusicPart> partList) {
 
+    	// find what we need from partList
+    	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
+    	bpMin = partList.get(0).getMeasures().get(0).getTempo(); // partList's first part, first measure's tempo
+    	
+    	
     	// variables
 		fps = 1000.0 / (double)DELAY;
-		bpMin = 60; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
-		bpBar = 2; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
+		//bpMin = 60; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
+		//bpBar = 2; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
     	
     	// background
     	setOpaque(true);
