@@ -18,13 +18,13 @@ import java.util.List;
 public class MyPanel extends JPanel implements Runnable {
 	
 	// constants
-    private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    //private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    private final int DELAY = 10; // 10 millisecond delay = 100 fps
     private final Color BG_COLOR = Color.BLACK;
     
     // right hand coordinates - passed to RightHand in constructor
     private final int RH_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
     private final int RH_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
-    //private final int RH_WINDOW_SCALE = 2; // right hand window is scaled by this value
     
     // class variables
     private Image orchestra;
@@ -32,6 +32,7 @@ public class MyPanel extends JPanel implements Runnable {
     private double fps;
     private int bpMin;
     private int bpBar;
+    private int initDynamics; // initial dynamic
     private Thread myThread;
 
 	
@@ -53,12 +54,11 @@ public class MyPanel extends JPanel implements Runnable {
     	// find what we need from partList
     	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
     	bpMin = partList.get(0).getMeasures().get(0).getTempo(); // partList's first part, first measure's tempo
+    	initDynamics = partList.get(0).getMeasures().get(0).getDynamics(); // partList's first part, first measure's dynamics
     	
     	
     	// variables
 		fps = 1000.0 / (double)DELAY;
-		//bpMin = 60; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
-		//bpBar = 2; // TEMPORARY: THIS DATA WILL BE PULLED FROM MUSICXML FILE
     	
     	// background
     	setOpaque(true);
@@ -68,8 +68,8 @@ public class MyPanel extends JPanel implements Runnable {
 		loadImages(); // this is only if we have images we need to load up
 		
     	// right hand
-    	Color rightHandColor = new Color(102, 255, 255);
-		rightHand = new RightHand(fps, bpMin, bpBar, rightHandColor, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
+    	//Color rightHandColor = new Color(102, 255, 255);
+		rightHand = new RightHand(fps, bpMin, bpBar, initDynamics, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
     	
     }
     

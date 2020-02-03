@@ -15,6 +15,7 @@ public abstract class RightHandPattern {
 	protected int yloc;
 	protected int beatNum; // the beat we are on of the bar (reset to 0 every time we reach the end of the cycle)
 	protected int frameNum; // the frame we are on of the beat (reset to 0 every time we go to next beat)
+	protected int measureNum; // the measure number that we are on.
 	
 	protected double beatframecount; // count the frames we've had to ensure we didn't lose any if fpBeat is a decimal
 	protected long totalframes; // total number of frames we have actually drawn
@@ -22,6 +23,7 @@ public abstract class RightHandPattern {
 	
 	protected int bpBar; // this one changes based on each pattern
 
+	
 	public RightHandPattern(double fpB) {
 		fpBeat = fpB;
 		fpBeatInt = round(fpBeat);
@@ -29,6 +31,7 @@ public abstract class RightHandPattern {
 		yloc = INITIAL_Y;
 		beatNum = 0;
 		frameNum = 0;
+		measureNum = 0;
 		beatframecount = fpBeat; // start at fpBeat so we know how many we need to do next
 		totalframes = 0;
 	}
@@ -39,6 +42,7 @@ public abstract class RightHandPattern {
 	protected void incBeatNum() {
 		beatNum++;
 		beatNum = beatNum % bpBar;
+		if(beatNum == 0) measureNum++; // increment measure number if we looped around
 		beatframecount += fpBeat; // how many frames we should have had so far
 		fpBeatInt = round(beatframecount) - (int)totalframes; // how many frames we need to do this beat is based off how many we have already done.
 		
@@ -52,12 +56,14 @@ public abstract class RightHandPattern {
 	}
 	
 	
-	
 	public int getX() {
 		return xloc;
 	}
 	public int getY() {
 		return yloc;
+	}
+	public int getMeasureNum() {
+		return measureNum;
 	}
 	
 }

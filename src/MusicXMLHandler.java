@@ -13,7 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 public class MusicXMLHandler extends DefaultHandler {
-
+	
 	private List<MusicPart> partList;
 	private MusicPart part;
 	private Measure measure;
@@ -59,8 +59,12 @@ public class MusicXMLHandler extends DefaultHandler {
 		
 		//measure
 		if(qName.equalsIgnoreCase("measure")) {
-			String measureNumber = attributes.getValue("number"); // get the number of the measure
-			measure = new Measure(measureNumber);
+			String measureNumS = attributes.getValue("number"); // get the number of the measure
+			if(measureNumS != null) {
+				int measureNum = Integer.parseInt(measureNumS); // convert string to int
+				measure = new Measure(measureNum); // create the measure with that number
+			}
+			
 			
 		}
 		
@@ -77,6 +81,11 @@ public class MusicXMLHandler extends DefaultHandler {
 			if(tempoS != null) {
 				int tempo = Integer.parseInt(tempoS); // tempo as an int
 				measure.setTempo(tempo); // set the tempo value
+			}
+			String dynamicsS = attributes.getValue("dynamics"); // dynamics string
+			if (dynamicsS != null) {
+				int dynamics = Integer.parseInt(dynamicsS);
+				measure.setDynamics(dynamics); // set the measure's dynamics value
 			}
 		}
 		

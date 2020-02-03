@@ -1,17 +1,21 @@
 
 public class Measure {
 
-	private String number; // the number value from the musicxml file
+	private final int DEFAULT_DYNAMICS = 90; // musicxml's default value for the dynamics. The dynamics listed in the musicxml are percentages
+	
+	private int number; // the number value from the musicxml file
 	private int beats; // beats per measure
 	private int beatType; // which note equals to a beat
 	private int tempo; // beats per minute
+	private int dynamics; // value of the dynamics
 	
-	public Measure(String number) {
+	public Measure(int number) {
 		
 		this.number = number;
 		beats = 0;
 		beatType = 0;
 		tempo = 0;
+		dynamics = 100; // 100% is the default 
 		
 	}
 	
@@ -28,6 +32,9 @@ public class Measure {
 	public void setTempo(int tempo) {
 		this.tempo = tempo;
 	}
+	public void setDynamics(int dynamics) {
+		this.dynamics = dynamics;
+	}
 	
 	//get methods
 	public int getBeats() {
@@ -38,6 +45,9 @@ public class Measure {
 	}
 	public int getTempo() {
 		return tempo;
+	}
+	public int getDynamics() {
+		return dynamics;
 	}
 	
 }
