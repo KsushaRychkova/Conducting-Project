@@ -23,8 +23,8 @@ public class MyPanel extends JPanel implements Runnable {
     private final Color BG_COLOR = Color.BLACK;
     
     // right hand coordinates - passed to RightHand in constructor
-    private final int RH_WINDOW_X0 = 200; // x coordinate of top lefthand corner of the right hand's window
-    private final int RH_WINDOW_Y0 = 100; // y coordinate of top lefthand corner of the right hand's window
+    private final int RH_WINDOW_X0 = 1000; // x coordinate of top lefthand corner of the right hand's window
+    private final int RH_WINDOW_Y0 = 275; // y coordinate of top lefthand corner of the right hand's window
     
     // class variables
     private Image orchestra;
@@ -33,13 +33,19 @@ public class MyPanel extends JPanel implements Runnable {
     private int bpMin;
     private int bpBar;
     private int initDynamics; // initial dynamic
+    private List<MusicPart> partList;
+    
+    private int measureNum; // which measure we are currently on
+    
+    private boolean isEnd; // switched on if it's the end of the music
     private Thread myThread;
 
 	
 	
 	public MyPanel(List<MusicPart> partList) {
 		
-		initPanel(partList);
+		this.partList = partList;
+		initPanel();
 		
 	}
 	
@@ -49,7 +55,7 @@ public class MyPanel extends JPanel implements Runnable {
         //star = ii.getImage();
     }
     
-    private void initPanel(List<MusicPart> partList) {
+    private void initPanel() {
 
     	// find what we need from partList
     	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
@@ -59,6 +65,8 @@ public class MyPanel extends JPanel implements Runnable {
     	
     	// variables
 		fps = 1000.0 / (double)DELAY;
+		measureNum = 0;
+		isEnd = false;
     	
     	// background
     	setOpaque(true);
@@ -77,8 +85,23 @@ public class MyPanel extends JPanel implements Runnable {
     private void update() {
     	
     	rightHand.update(); // right hand takes care of the updates
+    	measureNum = rightHand.getMeasureNum();
+//    	System.out.println(bpMin + " / " + bpBar);
+		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
+    	
+    	checkIfEnd();
     	
     }
+    
+	public void checkIfEnd() {
+		for(MusicPart part : partList) {
+			if(measureNum < part.getMeasures().size()) { // if there is still a part that hasn't reached the end...
+				isEnd = false; // set it to false
+				return;
+			}
+		}
+		isEnd = true; // if our current measure number is greater or equal to the number of measures in every part, set it to true
+	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
@@ -104,11 +127,11 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		beforeTime = System.currentTimeMillis();
 		
-		while (true) {
+		while (isEnd == false) { // while it's not yet the end of the music...
 
             update();
             repaint();
-
+            
             timeDiff = System.currentTimeMillis() - beforeTime; // how long it took us to perform update and repaint
             sleep = DELAY - timeDiff; // how much longer we need to wait for the frame to be up
 

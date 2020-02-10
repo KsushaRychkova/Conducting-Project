@@ -13,8 +13,8 @@ import java.util.List;
 public class MyWindow extends JFrame implements Runnable {
 	
 	// global variables
-	private final int WIDTH = 900;
-	private final int HEIGHT = 600;
+	private final int WIDTH = 1500;
+	private final int HEIGHT = 1000;
 	
 	public MyWindow(List<MusicPart> partList) {
 		

@@ -18,8 +18,6 @@ public class RightHand {
 	
 	// constants
 	private final int DIAMETER = 20; // diameter of circle
-	private final int WINDOW_LENGTH = 300; // relative sizes, will be scaled appropriately in MyPanel
-	private final int WINDOW_HEIGHT = 300;
 	private final int TRAIL_LIMIT = 50; // the number of previous circle positions to be stored in trail
 	private final Color MAX_COLOR = new Color(255, 0, 0); // color of circle at the highest dynamics
 	private final Color MIN_COLOR = new Color(67, 0, 144); // color of circle at the lowest dynamics
@@ -30,15 +28,13 @@ public class RightHand {
 	private int bpBar; // beats per bar
 	private double fps;
 	private double fpBeat; // length of one beat in frames = fps * 60 / bpmin
-	private Color maxColor; // color corresponding to the maximum dynamic
-	private Color minColor; // color corresponding to the minimum dynamic (0)
 	
 	// variables that will be changed
 	private int xloc, yloc; // current location; NOTE: these locations are only with respect to the window
 	private Color color; // dependent on the dynamics
 	private int measureNum; // current measure
 	private int dynamics; // the current dynamics
-	private int nextDynamics; // when we have a change in dynamics, we want to get to it gradually, so this is the new dynamics we are changing to
+	//private int nextDynamics; // when we have a change in dynamics, we want to get to it gradually, so this is the new dynamics we are changing to
 	
 	// variables to do with the trail
 	private Queue<Circle> trail;
@@ -55,7 +51,7 @@ public class RightHand {
 		bpMin = bpM;
 		bpBar = bpB;
 		this.dynamics = dynamics;
-		nextDynamics = dynamics; // start at the same value
+		//nextDynamics = dynamics; // start at the same value
 		xOffset = x0;
 		yOffset = y0;
 		bgColor = bg;
@@ -88,18 +84,18 @@ public class RightHand {
 	
 	// main methods
 	public void update() {
-		
+				
 		pattern.update();
 		xloc = pattern.getX();
 		yloc = pattern.getY();
 		measureNum = pattern.getMeasureNum();
-		updateDynamicsAndColor();
+		
+		//updateDynamics();
 		
 	}
-	
-	public void updateDynamicsAndColor() {
+	/*
+	public void updateDynamics() {
 		if(measureNum > partList.get(0).getMeasures().size()) { // if the current measure is more than the total number of measures in the list...
-			color = new Color(255,255,255); // TEMPORARY: MAKES THE CIRCLE WHITE. CHANGE THIS TO DO SOMETHING ELSE!!!!
 			return;
 		}
 		else {
@@ -110,9 +106,8 @@ public class RightHand {
 			else if(dynamics != nextDynamics) { // if the dynamics changed this measure...
 				dynamics += (int)((double)(nextDynamics - dynamics) / (double)(bpBar * 10)); // gradual increase throughout the measure
 			}
-			color = dynamicsToColor(dynamics);
 		}
-	}
+	}*/
 	
 	public void draw(Graphics g) {
 		
@@ -202,6 +197,9 @@ public class RightHand {
 	public void setbpM(int bpM) {
 		bpMin = bpM;
 		fpBeat = (int)(fps * 60.0 / (double)bpMin);
+	}
+	public int getMeasureNum() {
+		return measureNum;
 	}
 
 }

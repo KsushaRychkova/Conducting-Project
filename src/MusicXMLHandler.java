@@ -23,7 +23,10 @@ public class MusicXMLHandler extends DefaultHandler {
 	// booleans used to help with parsing
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
-
+	
+	// other variables
+	private int tempo; // save the value of the tempo to be used in future measures
+	
 	
 	
 	public MusicXMLHandler() {
@@ -32,6 +35,8 @@ public class MusicXMLHandler extends DefaultHandler {
 		part = null;
 		measure = null;
 		data = null;
+		
+		tempo = 0; // default to 0 so we can identify it later
 		
 		
 	}
@@ -59,13 +64,18 @@ public class MusicXMLHandler extends DefaultHandler {
 		
 		//measure
 		if(qName.equalsIgnoreCase("measure")) {
+			String implicitS = attributes.getValue("implicit");
 			String measureNumS = attributes.getValue("number"); // get the number of the measure
 			if(measureNumS != null) {
-				int measureNum = Integer.parseInt(measureNumS); // convert string to int
-				measure = new Measure(measureNum); // create the measure with that number
+				if(implicitS != null) { // if we have an integer number for the measure...
+					int measureNum = -1; // set the measure number to -1 so we can use it later
+					measure = new Measure(measureNum); // create the measure with that number
+				}
+				else {
+					int measureNum = Integer.parseInt(measureNumS); // convert string to int
+					measure = new Measure(measureNum); // create the measure with that number
+				}
 			}
-			
-			
 		}
 		
 		// time signature (part of measure)
@@ -79,8 +89,11 @@ public class MusicXMLHandler extends DefaultHandler {
 		else if(qName.equalsIgnoreCase("sound")) {
 			String tempoS = attributes.getValue("tempo"); // tempo as a string
 			if(tempoS != null) {
-				int tempo = Integer.parseInt(tempoS); // tempo as an int
+				tempo = Integer.parseInt(tempoS); // tempo as an int
 				measure.setTempo(tempo); // set the tempo value
+			}
+			else if(tempoS == null) {
+				measure.setTempo(tempo); // if there was no tempo listed, set it to whatever our tempo was previously
 			}
 			String dynamicsS = attributes.getValue("dynamics"); // dynamics string
 			if (dynamicsS != null) {
@@ -138,6 +151,7 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 		if(qName.equalsIgnoreCase("part")) { // if we've reached the end of the part
 			partList.add(part); // add the part to the part list
+			adjustTempos(); // adjust the tempos for the parts we have
 		}
 		
 		/*
@@ -170,7 +184,13 @@ public class MusicXMLHandler extends DefaultHandler {
 		data.append(new String(ch, start, length));
 	}
 	
-	
+	private void adjustTempos() { // since the tempo isn't named at the start sometimes, we are setting it to whichever value was named later on
+		for(MusicPart part : partList) { // for each part...
+			for(Measure measure : part.getMeasures()) { // for each of its measures...
+				if(measure.getTempo() <= 0) measure.setTempo(tempo); // if the tempo is less than 1, set it to whatever value we have saved in tempo
+			}
+		}
+	}
 	
 	public List<MusicPart> getPartList(){
 		return partList;

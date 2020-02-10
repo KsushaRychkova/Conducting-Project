@@ -29,7 +29,8 @@ public class Main {
 		List<MusicPart> partList = null;
 		
 		
-		inputFile = new File("SchbAvMaSample.musicxml");
+		inputFile = new File("MozartTrio.musicxml");
+		//inputFile = new File("SchbAvMaSample.musicxml");
 		
 		/*
 		if(args.length > 0) { // if we included the filename in args
