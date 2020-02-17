@@ -61,17 +61,6 @@ public class Main {
 		
 		EventQueue.invokeLater(new MyWindow(partList));
 		
-		/*
-		EventQueue.invokeLater(() -> {
-			MyWindow window = new MyWindow(partList);
-            window.setVisible(true);
-        });
-        */
-		
-		/*
-		MyWindow window = new MyWindow();
-		window.setVisible(true);
-		*/
 			
 	}
 	

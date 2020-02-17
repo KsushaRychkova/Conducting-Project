@@ -30,7 +30,7 @@ public class MyWindow extends JFrame implements Runnable {
         setSize(WIDTH, HEIGHT);
         setTitle("Conducting Animation");
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}

@@ -26,9 +26,14 @@ public class MyPanel extends JPanel implements Runnable {
     private final int RH_WINDOW_X0 = 1000; // x coordinate of top lefthand corner of the right hand's window
     private final int RH_WINDOW_Y0 = 275; // y coordinate of top lefthand corner of the right hand's window
     
+    // left hand coordinates - passed to LeftHand in constructor
+    private final int LH_WINDOW_X0 = 750; // x coordinate of top lefthand corner of the left hand's window
+    private final int LH_WINDOW_Y0 = 500; // y coordinate of top lefthand corner of the left hand's window
+    
     // class variables
     private Image orchestra;
     private RightHand rightHand;
+    private LeftHand leftHand;
     private double fps;
     private int bpMin;
     private int bpBar;
@@ -76,8 +81,10 @@ public class MyPanel extends JPanel implements Runnable {
 		loadImages(); // this is only if we have images we need to load up
 		
     	// right hand
-    	//Color rightHandColor = new Color(102, 255, 255);
 		rightHand = new RightHand(fps, bpMin, bpBar, initDynamics, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
+		
+		// left hand
+		leftHand = new LeftHand(LH_WINDOW_X0, LH_WINDOW_Y0, initDynamics, partList);
     	
     }
     
@@ -85,9 +92,10 @@ public class MyPanel extends JPanel implements Runnable {
     private void update() {
     	
     	rightHand.update(); // right hand takes care of the updates
+    	leftHand.update(measureNum);
     	measureNum = rightHand.getMeasureNum();
 //    	System.out.println(bpMin + " / " + bpBar);
-		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
+//		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
     	
     	checkIfEnd();
     	
@@ -109,6 +117,7 @@ public class MyPanel extends JPanel implements Runnable {
 		super.paintComponent(g);
 		setBackground(BG_COLOR);
 		rightHand.draw(g);
+		leftHand.draw(g);
 		
 	}
 	
