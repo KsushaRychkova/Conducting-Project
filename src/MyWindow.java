@@ -16,15 +16,15 @@ public class MyWindow extends JFrame implements Runnable {
 	private final int WIDTH = 1500;
 	private final int HEIGHT = 1000;
 	
-	public MyWindow(List<MusicPart> partList) {
+	public MyWindow(List<MusicPart> partList, PieceInfo pieceInfo) {
 		
-		initUI(partList);
+		initUI(partList, pieceInfo);
 		
 	}
 	
-	private void initUI(List<MusicPart> partList) {
+	private void initUI(List<MusicPart> partList, PieceInfo pieceInfo) {
 		
-        MyPanel panel = new MyPanel(partList);
+        MyPanel panel = new MyPanel(partList, pieceInfo);
         add(panel);
 
         setSize(WIDTH, HEIGHT);

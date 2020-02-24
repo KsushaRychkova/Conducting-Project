@@ -4,6 +4,7 @@ import java.util.List;
 public class MusicPart {
 
 	private String id;
+	private String instrument_name;
 	
 	private List<Measure> measureList; // list of measures in this part
 	
@@ -21,10 +22,19 @@ public class MusicPart {
 	public void addMeasure(Measure m) {
 		measureList.add(m);
 	}
+	public void setInstrument(String s) {
+		instrument_name = s;
+	}
 	
 	// get methods
 	public List<Measure> getMeasures(){
 		return measureList;
+	}
+	public String getInstrumentName() {
+		return instrument_name;
+	}
+	public String getID() {
+		return id;
 	}
 	
 }

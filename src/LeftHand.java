@@ -96,7 +96,7 @@ public class LeftHand {
 			averageNextDynamics = averageNextDynamics / partnum;
 		
 			dynamics = averageNextDynamics;
-			System.out.println("Measure: " + measureNum + " Average Dynamics: " + averageNextDynamics);
+			//System.out.println("Measure: " + measureNum + " Average Dynamics: " + averageNextDynamics);
 		
 			// update the color
 			color = dynamicsToColor(dynamics);

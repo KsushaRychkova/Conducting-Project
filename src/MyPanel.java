@@ -8,6 +8,8 @@
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -21,6 +23,7 @@ public class MyPanel extends JPanel implements Runnable {
     //private final int DELAY = 20; // 20 millisecond delay = 50 fps
     private final int DELAY = 10; // 10 millisecond delay = 100 fps
     private final Color BG_COLOR = Color.BLACK;
+	private final Color FONT_COLOR = Color.white; // color of the font
     
     // right hand coordinates - passed to RightHand in constructor
     private final int RH_WINDOW_X0 = 1000; // x coordinate of top lefthand corner of the right hand's window
@@ -31,14 +34,15 @@ public class MyPanel extends JPanel implements Runnable {
     private final int LH_WINDOW_Y0 = 500; // y coordinate of top lefthand corner of the left hand's window
     
     // class variables
-    private Image orchestra;
     private RightHand rightHand;
     private LeftHand leftHand;
+    private Orchestra orchestra;
     private double fps;
     private int bpMin;
     private int bpBar;
     private int initDynamics; // initial dynamic
     private List<MusicPart> partList;
+    private PieceInfo pieceInfo;
     
     private int measureNum; // which measure we are currently on
     
@@ -47,18 +51,14 @@ public class MyPanel extends JPanel implements Runnable {
 
 	
 	
-	public MyPanel(List<MusicPart> partList) {
+	public MyPanel(List<MusicPart> partList, PieceInfo pieceInfo) {
 		
 		this.partList = partList;
+		this.pieceInfo = pieceInfo;
+		this.pieceInfo.createTitles(); // need to do this now that we have all the information we need
 		initPanel();
 		
 	}
-	
-    private void loadImages() {
-
-        //ImageIcon ii = new ImageIcon("src/resources/star.png");
-        //star = ii.getImage();
-    }
     
     private void initPanel() {
 
@@ -77,14 +77,15 @@ public class MyPanel extends JPanel implements Runnable {
     	setOpaque(true);
 		setBackground(BG_COLOR);
 		
-		// images
-		loadImages(); // this is only if we have images we need to load up
 		
     	// right hand
 		rightHand = new RightHand(fps, bpMin, bpBar, initDynamics, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
 		
 		// left hand
 		leftHand = new LeftHand(LH_WINDOW_X0, LH_WINDOW_Y0, initDynamics, partList);
+		
+		// orchestra
+		orchestra = new Orchestra(partList);
     	
     }
     
@@ -93,6 +94,7 @@ public class MyPanel extends JPanel implements Runnable {
     	
     	rightHand.update(); // right hand takes care of the updates
     	leftHand.update(measureNum);
+    	orchestra.update();
     	measureNum = rightHand.getMeasureNum();
 //    	System.out.println(bpMin + " / " + bpBar);
 //		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
@@ -111,6 +113,45 @@ public class MyPanel extends JPanel implements Runnable {
 		isEnd = true; // if our current measure number is greater or equal to the number of measures in every part, set it to true
 	}
 	
+	private void drawTitle(Graphics g) { // this draws the title, subtitle, and contributors strings at the top center of the panel
+		
+		int x = 0; // x coordinate
+		
+		g.setColor(FONT_COLOR);
+		
+		Font titleFont = new Font("Goudy Old Style", Font.PLAIN, 60); // font for the title
+		FontMetrics titleMetrics = g.getFontMetrics(titleFont); // information about that font
+		
+		Font subtitleFont = new Font("Goudy Old Style", Font.PLAIN, 50); // font for the subtitle
+		FontMetrics subtitleMetrics = g.getFontMetrics(subtitleFont); // information about that font
+		
+		Font contribFont = new Font("Goudy Old Style", Font.PLAIN, 36); // font for the contributors
+		FontMetrics contribMetrics = g.getFontMetrics(contribFont); // information about that font
+		
+		String title = pieceInfo.getTitle();
+		String subtitle = pieceInfo.getSubtitle();
+		String contributors = pieceInfo.getContributors();
+		
+		g.setFont(titleFont); 
+		
+		x = 750 - (int)(titleMetrics.stringWidth(title)/2); // x position is such that the title is centered
+		g.drawString(title, x, 60);
+		
+		if(subtitle != null) { // if we have a subtitle...
+			g.setFont(subtitleFont);
+			x = 750 - (int)(subtitleMetrics.stringWidth(subtitle)/2); // change it for the subtitle
+			g.drawString(subtitle, x, 110);
+		}
+		
+		if(contributors != null) { // if we have contributors...
+			g.setFont(contribFont);
+			x = 750 - (int)(contribMetrics.stringWidth(contributors)/2); // change it for the contributors
+			g.drawString(contributors, x, 160);
+		}
+		
+		
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		
@@ -118,6 +159,8 @@ public class MyPanel extends JPanel implements Runnable {
 		setBackground(BG_COLOR);
 		rightHand.draw(g);
 		leftHand.draw(g);
+		orchestra.draw(g);
+		drawTitle(g);
 		
 	}
 	

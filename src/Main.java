@@ -27,6 +27,7 @@ public class Main {
 		
 		File inputFile;
 		List<MusicPart> partList = null;
+		PieceInfo pieceInfo = null;
 		
 		
 		inputFile = new File("MozartTrio.musicxml");
@@ -51,6 +52,7 @@ public class Main {
 	        saxParser.parse(inputFile, handler); // this parses the file as instructed in MusicXMLHandler class
 	        
 	        partList = handler.getPartList(); // obtains the partList after parsing
+	        pieceInfo = handler.getPieceInfo(); // obtains the PieceInfo
 	        
 
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -59,7 +61,7 @@ public class Main {
 	    }
 	    
 		
-		EventQueue.invokeLater(new MyWindow(partList));
+		EventQueue.invokeLater(new MyWindow(partList, pieceInfo));
 		
 			
 	}

@@ -15,6 +15,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class MusicXMLHandler extends DefaultHandler {
 	
 	private List<MusicPart> partList;
+	private List<Instrument> instrumentList;
+	private PieceInfo pieceInfo;
+	private Instrument instrument;
 	private MusicPart part;
 	private Measure measure;
 	
@@ -23,6 +26,12 @@ public class MusicXMLHandler extends DefaultHandler {
 	// booleans used to help with parsing
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
+	private boolean bInstrumentName = false;
+	private boolean bWorkTitle = false;
+	private boolean bWorkNumber = false;
+	private boolean bCreator = false;
+	private boolean bMovementTitle = false;
+	private boolean bMovementNumber = false;
 	
 	// other variables
 	private int tempo; // save the value of the tempo to be used in future measures
@@ -31,10 +40,13 @@ public class MusicXMLHandler extends DefaultHandler {
 	
 	public MusicXMLHandler() {
 		
+		instrumentList = null;
+		instrument = null;
 		partList = null;
 		part = null;
 		measure = null;
 		data = null;
+		pieceInfo = new PieceInfo();
 		
 		tempo = 0; // default to 0 so we can identify it later
 		
@@ -53,6 +65,35 @@ public class MusicXMLHandler extends DefaultHandler {
 	*/
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+		
+		// title elements
+		if(qName.equalsIgnoreCase("work-number")) {
+			bWorkNumber = true;
+		}
+		if(qName.equalsIgnoreCase("work-title")) {
+			bWorkTitle = true;
+		}
+		if(qName.equalsIgnoreCase("creator")) {
+			bCreator = true;
+		}
+		if(qName.equalsIgnoreCase("movement-title")) {
+			bMovementTitle = true;
+		}
+		if(qName.equalsIgnoreCase("movement-number")) {
+			bMovementNumber = true;
+		}
+		
+		
+		// instruments (since this comes first in the musicxml file)
+		if(qName.equalsIgnoreCase("score-part")) {
+			String partID = attributes.getValue("id"); // get the part id value
+			instrument = new Instrument(partID); // create instrument with this part id
+			
+			if(instrumentList == null) instrumentList = new ArrayList<>();
+		}
+		if(qName.equalsIgnoreCase("instrument-name")) {
+			bInstrumentName = true;
+		}
 		
 		// part
 		if(qName.equalsIgnoreCase("part")) { // if we're looking at a part...
@@ -132,6 +173,35 @@ public class MusicXMLHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		
+		// title elements
+		if(bWorkNumber) {
+			pieceInfo.setWorkNumber(data.toString());
+			bWorkNumber = false;
+		}
+		if(bWorkTitle) {
+			pieceInfo.setWorkTitle(data.toString());
+			bWorkTitle = false;
+		}
+		if(bCreator) {
+			pieceInfo.addCreator(data.toString());
+			bCreator = false;
+		}
+		if(bMovementTitle) {
+			pieceInfo.setMovementTitle(data.toString());
+			bMovementTitle = false;
+		}
+		if(bMovementNumber) {
+			pieceInfo.setMovementNumber(data.toString());
+			bMovementNumber = false;
+		}
+		
+		// instruments
+		if(bInstrumentName) {
+			instrument.setName(data.toString()); // get the value
+			instrumentList.add(instrument); // add it to the list
+			bInstrumentName = false; // set back to false
+		}
+		
 		// time signature
 		if(bBeats) {
 			measure.setBeats(Integer.parseInt(data.toString())); // set the measure's beats value
@@ -150,6 +220,7 @@ public class MusicXMLHandler extends DefaultHandler {
 			part.addMeasure(measure); // add the measure to the part
 		}
 		if(qName.equalsIgnoreCase("part")) { // if we've reached the end of the part
+			matchInstrumentToPart(); // get the instrument name for the part
 			partList.add(part); // add the part to the part list
 			adjustTempos(); // adjust the tempos for the parts we have
 		}
@@ -192,8 +263,20 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 	}
 	
+	private void matchInstrumentToPart() { // we get the instrument names before we get the parts. We can use this method to match them up
+		for(Instrument instrum : instrumentList) { // loop through the instruments
+			if(instrum.getPart().equalsIgnoreCase(part.getID())) { // if they match
+				part.setInstrument(instrum.getName()); // give the instrument name to the part
+				break;
+			}
+		}
+	}
+	
 	public List<MusicPart> getPartList(){
 		return partList;
+	}
+	public PieceInfo getPieceInfo() {
+		return pieceInfo;
 	}
 	
 }
