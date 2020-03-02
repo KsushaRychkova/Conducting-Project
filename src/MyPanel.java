@@ -35,7 +35,7 @@ public class MyPanel extends JPanel implements Runnable {
     
     // class variables
     private RightHand rightHand;
-    private LeftHand leftHand;
+//    private LeftHand leftHand;
     private Orchestra orchestra;
     private double fps;
     private int bpMin;
@@ -65,7 +65,7 @@ public class MyPanel extends JPanel implements Runnable {
     	// find what we need from partList
     	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
     	bpMin = partList.get(0).getMeasures().get(0).getTempo(); // partList's first part, first measure's tempo
-    	initDynamics = partList.get(0).getMeasures().get(0).getDynamics(); // partList's first part, first measure's dynamics
+//    	initDynamics = partList.get(0).getMeasures().get(0).getDynamics(); // partList's first part, first measure's dynamics
     	
     	
     	// variables
@@ -79,10 +79,10 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		
     	// right hand
-		rightHand = new RightHand(fps, bpMin, bpBar, initDynamics, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
+		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
 		
 		// left hand
-		leftHand = new LeftHand(LH_WINDOW_X0, LH_WINDOW_Y0, initDynamics, partList);
+//		leftHand = new LeftHand(LH_WINDOW_X0, LH_WINDOW_Y0, initDynamics, partList);
 		
 		// orchestra
 		orchestra = new Orchestra(partList);
@@ -93,8 +93,8 @@ public class MyPanel extends JPanel implements Runnable {
     private void update() {
     	
     	rightHand.update(); // right hand takes care of the updates
-    	leftHand.update(measureNum);
-    	orchestra.update();
+//    	leftHand.update(measureNum);
+    	orchestra.update(measureNum);
     	measureNum = rightHand.getMeasureNum();
 //    	System.out.println(bpMin + " / " + bpBar);
 //		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
@@ -158,7 +158,7 @@ public class MyPanel extends JPanel implements Runnable {
 		super.paintComponent(g);
 		setBackground(BG_COLOR);
 		rightHand.draw(g);
-		leftHand.draw(g);
+//		leftHand.draw(g);
 		orchestra.draw(g);
 		drawTitle(g);
 		

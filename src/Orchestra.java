@@ -9,13 +9,30 @@ public class Orchestra {
 	private final int RIGHT_BOUND = 700; // the rightmost x coordinate
 	private final int TOP_BOUND = 400; // top bound
 	private final Color FONT_COLOR = Color.white; // font color
-
+	private final Color UP_COLOR = Color.orange; // color of up arrow for dynamics
+	private final Color DOWN_COLOR = Color.blue; // color of down arrow for dynamics
 	
-	private Color[] colorList; // array of colors; to be used in 
+	// triangle points -- these are used as a basis
+	private int[] xPointsUpTriangle; // x coordinates of the "up" triangle vertices
+	private int[] yPointsUpTriangle; // y coordinates of the "up" triangle vertices
+	private int[] xPointsDownTriangle; // x coordinates of the "down" triangle vertices
+	private int[] yPointsDownTriangle; // y coordinates of the "down" triangle vertices
+	
+	// triangle points -- these are the ones actually used to draw the triangles
+	private int[] xUp;
+	private int[] yUp;
+	private int[] xDown;
+	private int[] yDown;
+	
+	private Color[] colorList; // array of colors; to be used in picking colors for the orchestra blocks
 	
 	private int numParts; // number of parts (instruments) in the  piece
 	private List<MusicPart> partList;
-	private String[] instrumentList;
+	private String[] instrumentList; 
+	private int[] dynamics; // array of dynamics, one index per instrument
+	private int[] nextDynamics; // array of upcoming dynamics, so that we can compare to current dynamics
+	private int[] dynamicsChange; // how the dynamics are changing for each instrument in the current measure. <0 for decreasing, >0 for increasing
+	private int currentMeasure; // the measure we are on
 	
 	private int colorListOffset; // offset in the color list
 	private int blockLength; // length of the blocks we will be displaying for the orchestra
@@ -29,12 +46,19 @@ public class Orchestra {
 		numParts = partList.size();
 		
 		instrumentList = new String[numParts];
+		dynamics = new int[numParts];
+		nextDynamics = new int[numParts];
+		dynamicsChange = new int[numParts];
+		currentMeasure = 0;
 		
 		// get the instrument names into our instrumentList array
 		int i = 0;
 		for(MusicPart part : partList) {
 			instrumentList[i] = part.getInstrumentName();
-			System.out.println(instrumentList[i]);
+			dynamics[i] = 76; // initial dynamics are all 76 (default value)
+			nextDynamics[i] = part.getMeasures().get(0).getDynamics(); // dynamics for the first measure
+			dynamicsChange[i] = nextDynamics[i] - dynamics[i]; // decreasing if <0, increasing if >0
+			i++;
 		}
 		
 		// color list
@@ -45,7 +69,9 @@ public class Orchestra {
 		blockLength = (int)((RIGHT_BOUND - LEFT_BOUND) / numParts); // the distance we have, split between numParts
 		blockHeight = 150;
 		
-		font = new Font("Arial Rounded MT Bold", Font.PLAIN, 20); // font for the labels
+		font = new Font("Gabriola", Font.PLAIN, 30); // font for the labels
+		
+		initTriangles();
 		
 		
 	}
@@ -80,11 +106,85 @@ public class Orchestra {
 		
 	}
 	
-	public void update() {
+	private void initTriangles() { // set up the triangles
+		
+		// initialize coordinates for up triangle and down triangle with respect to the center of a 20x20 square
+		xPointsUpTriangle = new int[3];
+		yPointsUpTriangle = new int[3];
+		xPointsDownTriangle = new int[3];
+		yPointsDownTriangle = new int[3];
+		
+		xUp = new int[3];
+		yUp = new int[3];
+		xDown = new int[3];
+		yDown = new int[3];
+				
+		// the the locations of the triangle vertices; top center is the origin
+		xPointsUpTriangle[0] = -30; // bottom left corner
+		yPointsUpTriangle[0] = 40;
+		xPointsUpTriangle[1] = 0; // top center
+		yPointsUpTriangle[1] = 0;
+		xPointsUpTriangle[2] = 30; // bottom right corner
+		yPointsUpTriangle[2] = 40;
+				
+		xPointsDownTriangle[0] = -30; // top left corner
+		yPointsDownTriangle[0] = 0;
+		xPointsDownTriangle[1] = 0; // bottom center
+		yPointsDownTriangle[1] = 40;
+		xPointsDownTriangle[2] = 30; // top right corner
+		yPointsDownTriangle[2] = 0;
+		
+	}
+	
+	public void update(int measureNum) {
+		
+		if(currentMeasure != measureNum) {
+			
+			currentMeasure = measureNum; // update the current measure
+			
+			int i = 0;
+			for(MusicPart part : partList) {
+				if(nextDynamics[i] == 76) { // if we're going back to normal dynamics
+					dynamicsChange[i] = 0; // we want this here so that we don't display an up in dynamics every time we're getting out of a down
+				}
+				else {
+					dynamicsChange[i] = nextDynamics[i] - dynamics[i]; // decreasing if <0, increasing if >0
+				}
+				dynamics[i] = nextDynamics[i];
+				if(part.getMeasures().size() > measureNum) { // check if there even is a next measure
+					nextDynamics[i] = part.getMeasures().get(measureNum).getDynamics();
+	//				System.out.println("part number: " + i + "     dynamics: " + dynamics[i] + "    nextDynamics: " + nextDynamics[i]);
+				}
+				i++;
+			}
+			
+		}
+		
+		
+	}
+	
+	private void drawUpTriangle(Graphics g, int instrument) { // draws the up triangle, given the instrument index
+		
+		for(int i = 0; i < 3; i++) { // loop through each point in the triangle
+			xUp[i] = xPointsUpTriangle[i] + LEFT_BOUND + blockLength * instrument + (int)(blockLength / 2);
+			yUp[i] = yPointsUpTriangle[i] + TOP_BOUND - 50; // padding of 10 pixels
+		}
+		g.fillPolygon(xUp, yUp, 3); // up triangle
+		
+	}
+	private void drawDownTriangle(Graphics g, int instrument) { // draws the down triangle, given the instrument index
+		
+		for(int i = 0; i < 3; i++) { // loop through each point in the triangle
+			xDown[i] = xPointsDownTriangle[i] + LEFT_BOUND + blockLength * instrument + (int)(blockLength / 2);
+			yDown[i] = yPointsDownTriangle[i] + TOP_BOUND + blockHeight + 15; // padding of 15 pixels
+		}
+		g.fillPolygon(xDown, yDown, 3); // down triangle
 		
 	}
 	
 	public void draw(Graphics g) {
+		
+		g.setFont(font);
 		
 		for(int i = 0; i < numParts; i++) { // draw the block for each part
 			
@@ -94,7 +194,17 @@ public class Orchestra {
 			
 			// draw the words
 			g.setColor(FONT_COLOR);
-			//g.drawString(instrumentList[i], LEFT_BOUND + blockLength * i + 5, TOP_BOUND + blockHeight + 10);
+			g.drawString(instrumentList[i], LEFT_BOUND + blockLength * i + 5, TOP_BOUND + blockHeight + 10);
+			
+			// draw the arrows
+			if(dynamicsChange[i] < 0) { // dynamics are decreasing; down arrow
+				g.setColor(DOWN_COLOR);
+				drawDownTriangle(g, i);
+			}
+			if(dynamicsChange[i] > 0) { // dynamics are increasing; up arrow
+				g.setColor(UP_COLOR);
+				drawUpTriangle(g, i);
+			}
 		}
 		
 		

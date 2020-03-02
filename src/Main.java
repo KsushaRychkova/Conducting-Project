@@ -31,7 +31,7 @@ public class Main {
 		
 		
 		inputFile = new File("MozartTrio.musicxml");
-		//inputFile = new File("SchbAvMaSample.musicxml");
+//		inputFile = new File("SchbAvMaSample.musicxml");
 		
 		/*
 		if(args.length > 0) { // if we included the filename in args
