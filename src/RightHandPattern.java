@@ -41,8 +41,10 @@ public abstract class RightHandPattern {
 	// increase beat number, but make sure it's within the beats per bar number
 	protected void incBeatNum() {
 		beatNum++;
-		beatNum = beatNum % bpBar;
-		if(beatNum == 0) measureNum++; // increment measure number if we looped around
+		if(beatNum == bpBar) {
+			beatNum = 0;
+			measureNum++; 
+		}
 		beatframecount += fpBeat; // how many frames we should have had so far
 		fpBeatInt = round(beatframecount) - (int)totalframes; // how many frames we need to do this beat is based off how many we have already done.
 		
