@@ -6,6 +6,8 @@
 
 
 import javax.swing.JFrame;
+
+import java.io.File;
 import java.util.List;
 
 
@@ -16,15 +18,15 @@ public class MyWindow extends JFrame implements Runnable {
 	private final int WIDTH = 1500;
 	private final int HEIGHT = 1000;
 	
-	public MyWindow(List<MusicPart> partList, PieceInfo pieceInfo) {
+	public MyWindow(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
 		
-		initUI(partList, pieceInfo);
+		initUI(partList, pieceInfo, midifile);
 		
 	}
 	
-	private void initUI(List<MusicPart> partList, PieceInfo pieceInfo) {
+	private void initUI(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
 		
-        MyPanel panel = new MyPanel(partList, pieceInfo);
+        MyPanel panel = new MyPanel(partList, pieceInfo, midifile);
         add(panel);
 
         setSize(WIDTH, HEIGHT);

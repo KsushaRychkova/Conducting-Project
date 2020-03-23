@@ -14,7 +14,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import javax.sound.midi.*;
 
 
 public class MyPanel extends JPanel implements Runnable {
@@ -35,7 +39,6 @@ public class MyPanel extends JPanel implements Runnable {
     
     // class variables
     private RightHand rightHand;
-//    private LeftHand leftHand;
     private Orchestra orchestra;
     private double fps;
     private int bpMin;
@@ -48,15 +51,32 @@ public class MyPanel extends JPanel implements Runnable {
     
     private boolean isEnd; // switched on if it's the end of the music
     private Thread myThread;
+    private Sequencer sequencer; // to play the midi file
+    private Sequence sequence; // the info to be given to the sequencer
 
 	
 	
-	public MyPanel(List<MusicPart> partList, PieceInfo pieceInfo) {
+	public MyPanel(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
 		
 		this.partList = partList;
 		this.pieceInfo = pieceInfo;
 		this.pieceInfo.createTitles(); // need to do this now that we have all the information we need
+		
 		initPanel();
+		
+		// set up midi stuff for the sound
+		try {
+			sequencer = MidiSystem.getSequencer(); // default sequencer
+			if (sequencer == null) {
+				System.err.println("Sequencer device not supported");
+		        return;
+		    }
+			sequence = MidiSystem.getSequence(midifile); // use the midi file to get a sequence
+			sequencer.setSequence(sequence); // load it to the sequencer
+		} catch (MidiUnavailableException | InvalidMidiDataException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
     
@@ -81,11 +101,10 @@ public class MyPanel extends JPanel implements Runnable {
     	// right hand
 		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
 		
-		// left hand
-//		leftHand = new LeftHand(LH_WINDOW_X0, LH_WINDOW_Y0, initDynamics, partList);
 		
 		// orchestra
 		orchestra = new Orchestra(partList);
+		
     	
     }
     
@@ -93,11 +112,8 @@ public class MyPanel extends JPanel implements Runnable {
     private void update() {
     	
     	rightHand.update(); // right hand takes care of the updates
-//    	leftHand.update(measureNum);
     	orchestra.update(measureNum);
     	measureNum = rightHand.getMeasureNum();
-//    	System.out.println(bpMin + " / " + bpBar);
-//		System.out.println("Measure #: " + measureNum + "   Total Measures: " + partList.get(0).getMeasures().size());
     	
     	checkIfEnd();
     	
@@ -158,7 +174,6 @@ public class MyPanel extends JPanel implements Runnable {
 		super.paintComponent(g);
 		setBackground(BG_COLOR);
 		rightHand.draw(g);
-//		leftHand.draw(g);
 		orchestra.draw(g);
 		drawTitle(g);
 		
@@ -179,8 +194,16 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		beforeTime = System.currentTimeMillis();
 		
+		try {
+			sequencer.open();
+		} catch (MidiUnavailableException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		sequencer.start(); // start the music!
+		
 		while (isEnd == false) { // while it's not yet the end of the music...
-
+			
             update();
             repaint();
             
@@ -200,6 +223,8 @@ public class MyPanel extends JPanel implements Runnable {
 
             beforeTime = System.currentTimeMillis(); // set the beforetime to what it is at the end of the frame, to be used in the next one
         }
+		
+		sequencer.close(); // close it when we are done
 		
 	}
 	

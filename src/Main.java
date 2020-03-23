@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -25,13 +26,16 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		File inputFile;
+		File inputFile; // the musicxml file
+		File midiFile; // the midi file
 		List<MusicPart> partList = null;
 		PieceInfo pieceInfo = null;
 		
-		
-		inputFile = new File("MozartTrio.musicxml");
+//		inputFile = new File("sample1.musicxml");
 //		inputFile = new File("SchbAvMaSample.musicxml");
+//		midiFile = new File("SchbAvMaSample.mid");
+		inputFile = new File("MozartTrio.musicxml");
+		midiFile = new File("MozartTrio.mid");
 		
 		/*
 		if(args.length > 0) { // if we included the filename in args
@@ -61,7 +65,7 @@ public class Main {
 	    }
 	    
 		
-		EventQueue.invokeLater(new MyWindow(partList, pieceInfo));
+		EventQueue.invokeLater(new MyWindow(partList, pieceInfo, midiFile));
 		
 			
 	}
