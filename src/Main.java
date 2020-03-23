@@ -31,11 +31,12 @@ public class Main {
 		List<MusicPart> partList = null;
 		PieceInfo pieceInfo = null;
 		
-//		inputFile = new File("sample1.musicxml");
+		inputFile = new File("sample1.musicxml");
+		midiFile = new File("sample1.mid");
 //		inputFile = new File("SchbAvMaSample.musicxml");
 //		midiFile = new File("SchbAvMaSample.mid");
-		inputFile = new File("MozartTrio.musicxml");
-		midiFile = new File("MozartTrio.mid");
+//		inputFile = new File("MozartTrio.musicxml");
+//		midiFile = new File("MozartTrio.mid");
 		
 		/*
 		if(args.length > 0) { // if we included the filename in args
