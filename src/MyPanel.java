@@ -53,6 +53,8 @@ public class MyPanel extends JPanel implements Runnable {
     private Thread myThread;
     private Sequencer sequencer; // to play the midi file
     private Sequence sequence; // the info to be given to the sequencer
+    
+    private boolean musicRunning; // if the music is already running or not
 
 	
 	
@@ -92,6 +94,7 @@ public class MyPanel extends JPanel implements Runnable {
 		fps = 1000.0 / (double)DELAY;
 		measureNum = 0;
 		isEnd = false;
+		musicRunning = false;
     	
     	// background
     	setOpaque(true);
@@ -200,12 +203,17 @@ public class MyPanel extends JPanel implements Runnable {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		sequencer.start(); // start the music!
+		
 		
 		while (isEnd == false) { // while it's not yet the end of the music...
 			
             update();
             repaint();
+            
+            if(musicRunning == false) {
+            	sequencer.start(); // start the music!
+            	musicRunning = true;
+            }
             
             timeDiff = System.currentTimeMillis() - beforeTime; // how long it took us to perform update and repaint
             sleep = DELAY - timeDiff; // how much longer we need to wait for the frame to be up
