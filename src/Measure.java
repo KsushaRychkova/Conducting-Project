@@ -8,6 +8,7 @@ public class Measure {
 	private int beatType; // which note equals to a beat
 	private int tempo; // beats per minute
 	private int dynamics; // value of the dynamics
+	private boolean rest; // true if this is a rest measure, false otherwise
 	
 	public Measure(int number) {
 		
@@ -16,6 +17,7 @@ public class Measure {
 		beatType = 0;
 		tempo = 0;
 		dynamics = 76; // I'm making the default 76 because it's the average of piano (54) and forte (98)
+		rest = false; // default is false
 		
 	}
 	
@@ -35,8 +37,14 @@ public class Measure {
 	public void setDynamics(int dynamics) {
 		this.dynamics = dynamics;
 	}
+	public void setRest(boolean rest) {
+		this.rest = rest;
+	}
 	
 	//get methods
+	public int getNumber() {
+		return number;
+	}
 	public int getBeats() {
 		return beats;
 	}
@@ -48,6 +56,9 @@ public class Measure {
 	}
 	public int getDynamics() {
 		return dynamics;
+	}
+	public boolean isRestMeasure() {
+		return rest;
 	}
 	
 }

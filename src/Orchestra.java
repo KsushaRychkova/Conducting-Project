@@ -28,16 +28,29 @@ public class Orchestra {
 	
 	private int numParts; // number of parts (instruments) in the  piece
 	private List<MusicPart> partList;
-	private String[] instrumentList; 
+	private String[] instrumentList;
+	private int bpBar; // beats per bar to display time signature
+	private int beatType; // beat type to display time signature
+	
+	// dynamics
 	private int[] dynamics; // array of dynamics, one index per instrument
 	private int[] nextDynamics; // array of upcoming dynamics, so that we can compare to current dynamics
 	private int[] dynamicsChange; // how the dynamics are changing for each instrument in the current measure. <0 for decreasing, >0 for increasing
+	
+	// rest measures
+	private boolean[] restMeasures; // array of current rest measures, array is updated at the start of each measure
+	private boolean[] prevRestMeasures; // saves the previous measure's rest status
+	private boolean[] nextRestMeasures; // the upcoming rest measures
+	private int[] alphas; // alpha is color transparency, and the factor by which the colors are faded if it's a rest measure
+	private Color tempColor; // declare space for a temporary color now so we can just overwrite at every iteration
+	
 	private int currentMeasure; // the measure we are on
 	
 	private int colorListOffset; // offset in the color list
 	private int blockLength; // length of the blocks we will be displaying for the orchestra
 	private int blockHeight; // height of the blocks
-	private Font font; // font for the labels
+	private Font instrumentFont; // font for the labels
+	private Font measureNumFont; // font for the measure number display
 	
 	
 	public Orchestra(List<MusicPart> partList) {
@@ -49,29 +62,53 @@ public class Orchestra {
 		dynamics = new int[numParts];
 		nextDynamics = new int[numParts];
 		dynamicsChange = new int[numParts];
+		
+		restMeasures = new boolean[numParts];
+		prevRestMeasures = new boolean[numParts];
+		nextRestMeasures = new boolean[numParts];
+		alphas = new int[numParts];
+		
 		currentMeasure = 0;
 		
-		// get the instrument names into our instrumentList array
+		// get the instrument names into our instrumentList array, also set up the dynamics and rest measures arrays
 		int i = 0;
 		for(MusicPart part : partList) {
 			instrumentList[i] = part.getInstrumentName();
+			
 			dynamics[i] = 76; // initial dynamics are all 76 (default value)
 			nextDynamics[i] = part.getMeasures().get(0).getDynamics(); // dynamics for the first measure
 			dynamicsChange[i] = nextDynamics[i] - dynamics[i]; // decreasing if <0, increasing if >0
+			
+			restMeasures[i] = part.getMeasures().get(0).isRestMeasure(); // see if the first measure is a rest measure for any of the parts
+			prevRestMeasures[i] = false;
+			if(currentMeasure < part.getMeasures().size()) { // if there even is another measure
+				nextRestMeasures[i] = part.getMeasures().get(1).isRestMeasure(); // next measure
+			}
+			if(restMeasures[i] == true) { // if the starting measure is a rest measure for instrument at index i...
+				alphas[i] = 30; // start off transparent
+			}
+			else{ // otherwise...
+				alphas[i] = 255; // start off completely opaque
+			}
+			
 			i++;
 		}
 		
 		// color list
 		colorList = new Color[12];
-		initColors();
+		initColors(); // sets up the individual colors
 		colorListOffset = (int)(Math.random() * 12.0);
 		
 		blockLength = (int)((RIGHT_BOUND - LEFT_BOUND) / numParts); // the distance we have, split between numParts
 		blockHeight = 150;
 		
-		font = new Font("Gabriola", Font.PLAIN, 30); // font for the labels
+		instrumentFont = new Font("Gabriola", Font.PLAIN, 30); // font for the labels
+		measureNumFont = new Font("Gabriola", Font.PLAIN, 50); // font for the measure number display
 		
-		initTriangles();
+		bpBar = partList.get(0).getMeasures().get(0).getBeats(); // beats per bar
+    	beatType = partList.get(0).getMeasures().get(0).getBeatType(); // beat type
+		
+		initTriangles(); //sets up the individual triangles
 		
 		
 	}
@@ -138,12 +175,18 @@ public class Orchestra {
 	
 	public void update(int measureNum) {
 		
+		for(int i = 0; i < numParts; i++) {
+			adjustAlphas(i);
+		}
+		
 		if(currentMeasure != measureNum) {
 			
 			currentMeasure = measureNum; // update the current measure
 			
 			int i = 0;
 			for(MusicPart part : partList) {
+				
+				// dynamics
 				if(nextDynamics[i] == 76) { // if we're going back to normal dynamics
 					dynamicsChange[i] = 0; // we want this here so that we don't display an up in dynamics every time we're getting out of a down
 				}
@@ -153,8 +196,16 @@ public class Orchestra {
 				dynamics[i] = nextDynamics[i];
 				if(part.getMeasures().size() > measureNum) { // check if there even is a next measure
 					nextDynamics[i] = part.getMeasures().get(measureNum).getDynamics();
-	//				System.out.println("part number: " + i + "     dynamics: " + dynamics[i] + "    nextDynamics: " + nextDynamics[i]);
 				}
+				
+				
+				// rest measures
+				prevRestMeasures[i] = restMeasures[i]; // save the previous measure's rest statuses
+				restMeasures[i] = nextRestMeasures[i]; // update restMeasures with current measure's rests
+				if(part.getMeasures().size() > measureNum + 1) { // check if there even is a next measure
+					nextRestMeasures[i] = part.getMeasures().get(measureNum+1).isRestMeasure(); // set nextRestMeasures to the next measure's rests
+				}	
+				
 				i++;
 			}
 			
@@ -182,19 +233,41 @@ public class Orchestra {
 		
 	}
 	
+	private void adjustAlphas(int i) { // fix the alphas[i] based on prevRestMeasures[i] and restMeasures[i]
+		
+
+		if(prevRestMeasures[i] == true && restMeasures[i] == false) { // if prev is a rest measure and current is not, fade in
+			alphas[i] = alphas[i] + 2;
+			if(alphas[i] > 255) alphas[i] = 255; // max allowed is 255 (completely opaque)
+//			System.out.println("   Fading in! Measure : " + currentMeasure);
+		}
+		else if(restMeasures[i] == false && nextRestMeasures[i] == true) { // if current is not a rest measure and next is, fade out
+			alphas[i] = alphas[i] - 2; // decrease alpha
+			if(alphas[i] < 30) alphas[i] = 30; // alpha goes no lower than 30, since we still want to see a block there
+//			System.out.println("Fading out! Measure : " + currentMeasure);
+		}
+		
+
+	}
+	
 	public void draw(Graphics g) {
 		
-		g.setFont(font);
+		g.setFont(instrumentFont);
 		
 		for(int i = 0; i < numParts; i++) { // draw the block for each part
 			
 			// draw the blocks
-			g.setColor(colorList[(colorListOffset + i) % 12]); // pick the next color
+			tempColor = colorList[(colorListOffset + i) % 12]; // the color we're supposed to draw
+			tempColor = new Color(tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue(), alphas[i]); // set the new alpha value
+			g.setColor(tempColor); // use this color
 			g.fillRoundRect(LEFT_BOUND + blockLength * i, TOP_BOUND, blockLength - 10, blockHeight, 20, 20);
 			
-			// draw the words
+			
+			// draw the words for the instruments
 			g.setColor(FONT_COLOR);
 			g.drawString(instrumentList[i], LEFT_BOUND + blockLength * i + 5, TOP_BOUND + blockHeight + 10);
+			
+
 			
 			// draw the arrows
 			if(dynamicsChange[i] < 0) { // dynamics are decreasing; down arrow
@@ -206,6 +279,14 @@ public class Orchestra {
 				drawUpTriangle(g, i);
 			}
 		}
+		
+		// draw the words for the measure number and time signature
+		g.setFont(measureNumFont);
+		g.setColor(FONT_COLOR);
+		g.drawString("Time Signature: ", 600, 700);
+		g.drawString("" + bpBar, 860, 675);
+		g.drawString("" + beatType, 880, 705);
+		g.drawString("Measure:   " + partList.get(0).getMeasures().get(currentMeasure).getNumber(), 600, 800);
 		
 		
 	}

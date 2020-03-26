@@ -43,7 +43,6 @@ public class MyPanel extends JPanel implements Runnable {
     private double fps;
     private int bpMin;
     private int bpBar;
-    private int initDynamics; // initial dynamic
     private List<MusicPart> partList;
     private PieceInfo pieceInfo;
     
@@ -53,8 +52,6 @@ public class MyPanel extends JPanel implements Runnable {
     private Thread myThread;
     private Sequencer sequencer; // to play the midi file
     private Sequence sequence; // the info to be given to the sequencer
-    
-    private boolean musicRunning; // if the music is already running or not
 
 	
 	
@@ -87,14 +84,12 @@ public class MyPanel extends JPanel implements Runnable {
     	// find what we need from partList
     	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
     	bpMin = partList.get(0).getMeasures().get(0).getTempo(); // partList's first part, first measure's tempo
-//    	initDynamics = partList.get(0).getMeasures().get(0).getDynamics(); // partList's first part, first measure's dynamics
     	
     	
     	// variables
 		fps = 1000.0 / (double)DELAY;
 		measureNum = 0;
 		isEnd = false;
-		musicRunning = false;
     	
     	// background
     	setOpaque(true);
@@ -204,16 +199,13 @@ public class MyPanel extends JPanel implements Runnable {
 			e1.printStackTrace();
 		}
 		
+		sequencer.start(); // start the music!
 		
-		while (isEnd == false) { // while it's not yet the end of the music...
+		while (isEnd == false && sequencer.isRunning() == true) { // while it's not yet the end of the music...
 			
             update();
             repaint();
             
-            if(musicRunning == false) {
-            	sequencer.start(); // start the music!
-            	musicRunning = true;
-            }
             
             timeDiff = System.currentTimeMillis() - beforeTime; // how long it took us to perform update and repaint
             sleep = DELAY - timeDiff; // how much longer we need to wait for the frame to be up

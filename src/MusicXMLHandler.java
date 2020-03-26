@@ -35,7 +35,8 @@ public class MusicXMLHandler extends DefaultHandler {
 	
 	// other variables
 	private int tempo; // save the value of the tempo to be used in future measures
-	
+	private boolean isFirstMeasure; // true only for the first measure
+	private boolean implicitFlag; // flag implicit measures so we know to ignore them
 	
 	
 	public MusicXMLHandler() {
@@ -49,6 +50,8 @@ public class MusicXMLHandler extends DefaultHandler {
 		pieceInfo = new PieceInfo();
 		
 		tempo = 0; // default to 0 so we can identify it later
+		isFirstMeasure = false;
+		implicitFlag = false;
 		
 		
 	}
@@ -101,6 +104,7 @@ public class MusicXMLHandler extends DefaultHandler {
 			part = new MusicPart(partID);
 			
 			if(partList == null) partList = new ArrayList<>();
+			isFirstMeasure = true;
 		}
 		
 		//measure
@@ -108,9 +112,12 @@ public class MusicXMLHandler extends DefaultHandler {
 			String implicitS = attributes.getValue("implicit");
 			String measureNumS = attributes.getValue("number"); // get the number of the measure
 			if(measureNumS != null) {
-				if(implicitS != null) { // if we have an integer number for the measure...
-					int measureNum = -1; // set the measure number to -1 so we can use it later
+				if(implicitS != null && isFirstMeasure) { // the measure is implicit and it's the first measure of the part...
+					int measureNum = 0; // set the measure number to 0
 					measure = new Measure(measureNum); // create the measure with that number
+				}
+				else if(implicitS != null && isFirstMeasure == false) { // if the measure is implicit and it's not the first measure...
+					implicitFlag = true;
 				}
 				else {
 					int measureNum = Integer.parseInt(measureNumS); // convert string to int
@@ -120,14 +127,14 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 		
 		// time signature (part of measure)
-		else if(qName.equalsIgnoreCase("beats")) {
+		if(qName.equalsIgnoreCase("beats")) {
 			bBeats = true;
 		}
-		else if(qName.equalsIgnoreCase("beat-type")) {
+		if(qName.equalsIgnoreCase("beat-type")) {
 			bBeatType = true;
 		}
 		// tempo (part of measure)
-		else if(qName.equalsIgnoreCase("sound")) {
+		if(qName.equalsIgnoreCase("sound")) {
 			String tempoS = attributes.getValue("tempo"); // tempo as a string
 			if(tempoS != null) {
 				tempo = Integer.parseInt(tempoS); // tempo as an int
@@ -142,30 +149,14 @@ public class MusicXMLHandler extends DefaultHandler {
 				measure.setDynamics(dynamics); // set the measure's dynamics value
 			}
 		}
+		// rest measures
+		if(qName.equalsIgnoreCase("rest")) {
+			String restS = attributes.getValue("measure"); // rest attribute as a string
+			if(restS != null && restS.equals("yes")) { // if the musicxml file says this: <rest measure="yes"/>
+				measure.setRest(true);
+			}
+		}
 		
-		/*
-		if (qName.equalsIgnoreCase("wedge")) { // if the word in question is equal to "wedge"...
-			String wedgeType = attributes.getValue("type"); // get the wedge type
-			attr = new Wedge();
-			emp.setId(Integer.parseInt(id));
-			// initialize list
-			if (empList == null)
-				empList = new ArrayList<>();
-		}
-		else if (qName.equalsIgnoreCase("name")) {
-			// set boolean values for fields, will be used in setting Employee variables
-			bName = true;
-		}
-		else if (qName.equalsIgnoreCase("age")) {
-			bAge = true;
-		}
-		else if (qName.equalsIgnoreCase("gender")) {
-			bGender = true;
-		}
-		else if (qName.equalsIgnoreCase("role")) {
-			bRole = true;
-		}
-		*/
 		
 		data = new StringBuilder();
 	}
@@ -217,7 +208,13 @@ public class MusicXMLHandler extends DefaultHandler {
 		
 		
 		if(qName.equalsIgnoreCase("measure")) { // if we've reached the end of the measure
-			part.addMeasure(measure); // add the measure to the part
+			if(implicitFlag) { // if it was an implicit measure, do not add it
+				implicitFlag = false;
+			}
+			else { // add the measure to the part only if it's not an implicit measure
+				part.addMeasure(measure); 
+			}
+			isFirstMeasure = false; // no longer the first measure after this point
 		}
 		if(qName.equalsIgnoreCase("part")) { // if we've reached the end of the part
 			matchInstrumentToPart(); // get the instrument name for the part
@@ -225,28 +222,6 @@ public class MusicXMLHandler extends DefaultHandler {
 			adjustTempos(); // adjust the tempos for the parts we have
 		}
 		
-		/*
-		if (bAge) {
-			// age element, set Employee age
-			emp.setAge(Integer.parseInt(data.toString()));
-			bAge = false;
-		} else if (bName) {
-			emp.setName(data.toString());
-			bName = false;
-		} else if (bRole) {
-			emp.setRole(data.toString());
-			bRole = false;
-		} else if (bGender) {
-			emp.setGender(data.toString());
-			bGender = false;
-		}
-		
-		if (qName.equalsIgnoreCase("Employee")) {
-			// add Employee object to list
-			empList.add(emp);
-		}
-		
-		*/
 		
 	}
 	
@@ -267,7 +242,6 @@ public class MusicXMLHandler extends DefaultHandler {
 		for(Instrument instrum : instrumentList) { // loop through the instruments
 			if(instrum.getPart().equalsIgnoreCase(part.getID())) { // if they match
 				part.setInstrument(instrum.getName()); // give the instrument name to the part
-				break;
 			}
 		}
 	}

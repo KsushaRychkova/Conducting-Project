@@ -66,6 +66,9 @@ public class RightHand {
 			case 4:
 				pattern = new FourFourPattern(fpBeat);
 				break;
+			case 6:
+				pattern = new SixPattern(fpBeat);
+				break;
 		}
 		
 		trail = new LinkedList<>();
