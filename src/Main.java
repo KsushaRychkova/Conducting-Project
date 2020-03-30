@@ -1,11 +1,12 @@
 /* Mentored Research
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Project: Conducting Animation
  */
 
 
 import java.awt.EventQueue;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +22,6 @@ import org.xml.sax.SAXException;
 
 public class Main {
 
-	//private static File inputFile; // static means we can access it without creating an instance of Main
-	
 	
 	public static void main(String[] args) {
 		
@@ -35,8 +34,8 @@ public class Main {
 //		midiFile = new File("sample1.mid");
 //		inputFile = new File("SchbAvMaSample.musicxml");
 //		midiFile = new File("SchbAvMaSample.mid");
-		inputFile = new File("MozartTrio.musicxml");
-		midiFile = new File("MozartTrio.mid");
+//		inputFile = new File("MozartTrio.musicxml");
+//		midiFile = new File("MozartTrio.mid");
 		
 		/*
 		if(args.length > 0) { // if we included the filename in args
@@ -49,6 +48,33 @@ public class Main {
 		}
 		*/
 		
+		// ============================== get the files ==============================
+		MusicxmlFileSelectWindow musicxmlSelect = new MusicxmlFileSelectWindow();
+		Thread t1 = new Thread(musicxmlSelect); // create a thread for the musicxml file selection window
+		t1.start(); // run the thread
+		try {
+			t1.join(); // main thread will wait for t1 to finish
+		} catch (InterruptedException e1) {
+			// do nothing
+		}
+		inputFile = musicxmlSelect.getSelectedFile(); // get the file
+		musicxmlSelect.dispatchEvent(new WindowEvent(musicxmlSelect, WindowEvent.WINDOW_CLOSING)); // tell the jframe to close
+		
+		
+		
+		MidiFileSelectWindow midiSelect = new MidiFileSelectWindow();
+		Thread t2 = new Thread(midiSelect); // create a thread for the midi file selection window
+		t2.start(); // run the thread
+		try {
+			t2.join(); // main thread will wait for t2 to finish
+		} catch (InterruptedException e1) {
+			// do nothing
+		}
+		midiFile = midiSelect.getSelectedFile();
+		midiSelect.dispatchEvent(new WindowEvent(midiSelect, WindowEvent.WINDOW_CLOSING)); // tell the jframe to close
+		
+		
+		// ============================== parse the musicxml ==============================
 		SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 		
 		try {
@@ -65,7 +91,7 @@ public class Main {
 	        System.exit(0);
 	    }
 	    
-		
+		// ============================== begin the program ==============================
 		EventQueue.invokeLater(new MyWindow(partList, pieceInfo, midiFile));
 		
 			

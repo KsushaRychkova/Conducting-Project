@@ -26,6 +26,7 @@ public class MusicXMLHandler extends DefaultHandler {
 	// booleans used to help with parsing
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
+	private boolean bPartName = false;
 	private boolean bInstrumentName = false;
 	private boolean bWorkTitle = false;
 	private boolean bWorkNumber = false;
@@ -93,6 +94,9 @@ public class MusicXMLHandler extends DefaultHandler {
 			instrument = new Instrument(partID); // create instrument with this part id
 			
 			if(instrumentList == null) instrumentList = new ArrayList<>();
+		}
+		if(qName.equalsIgnoreCase("part-name")) {
+			bPartName = true;
 		}
 		if(qName.equalsIgnoreCase("instrument-name")) {
 			bInstrumentName = true;
@@ -187,10 +191,13 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 		
 		// instruments
+		if(bPartName) {
+			instrument.setPartName(data.toString()); // get the value
+			bPartName = false; // set back to false
+		}
 		if(bInstrumentName) {
-			instrument.setName(data.toString()); // get the value
-			instrumentList.add(instrument); // add it to the list
-			bInstrumentName = false; // set back to false
+			instrument.setInstrumentName(data.toString());
+			bInstrumentName = false;
 		}
 		
 		// time signature
@@ -205,7 +212,9 @@ public class MusicXMLHandler extends DefaultHandler {
 		// since some measures don't have a beats or beat-type listed, those measures will not set those values and will have the default values instead (0)
 		
 		
-		
+		if(qName.equalsIgnoreCase("score-part")) {
+			instrumentList.add(instrument);
+		}
 		
 		if(qName.equalsIgnoreCase("measure")) { // if we've reached the end of the measure
 			if(implicitFlag) { // if it was an implicit measure, do not add it

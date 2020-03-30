@@ -47,7 +47,6 @@ public class SixPattern extends RightHandPattern {
 				x = -50.0 * t + 150.0; // x moves linearly from 50 to 200 (since t moves from 1 to -1)
 				xloc = (int)x; // start at 50, end at 200
 				yloc = (int)(-75.0*(Math.sin(Math.pow(4.58343/150.0*x-7.11681, 2.0)/10.0) + 1.0/(10.0*(4.58343/150.0*x-7.11681))) + 300); // start at 300, end at 300
-				System.out.println(yloc);
 				break;
 			case 4:
 				

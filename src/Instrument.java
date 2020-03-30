@@ -8,21 +8,27 @@
 
 public class Instrument {
 
-	private String name;
+	private String partName;
+	private String instrumentName; // this one is optional, but if it's there, we will use it
 	private String partID;
 	
 	
 	public Instrument(String partID) {
 		
 		this.partID = partID;
+		partName = "";
+		instrumentName = "";
 		
 	}
 	
 	
 	
 	// set
-	public void setName(String name) {
-		this.name = name;
+	public void setPartName(String name) {
+		partName = name;
+	}
+	public void setInstrumentName(String name) {
+		instrumentName = name;
 	}
 	public void setPart(String id) {
 		partID = id;
@@ -30,7 +36,10 @@ public class Instrument {
 	
 	// get
 	public String getName() {
-		return name;
+		if(!instrumentName.equals("")) {
+			return instrumentName;
+		}
+		return partName;
 	}
 	public String getPart() {
 		return partID;
