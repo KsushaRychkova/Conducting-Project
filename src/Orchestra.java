@@ -36,12 +36,14 @@ public class Orchestra {
 	private int[] dynamics; // array of dynamics, one index per instrument
 	private int[] nextDynamics; // array of upcoming dynamics, so that we can compare to current dynamics
 	private int[] dynamicsChange; // how the dynamics are changing for each instrument in the current measure. <0 for decreasing, >0 for increasing
+	private int[] wordAlphas; // alphas for fading out the dynamics word display
 	
 	// rest measures
 	private boolean[] restMeasures; // array of current rest measures, array is updated at the start of each measure
 	private boolean[] prevRestMeasures; // saves the previous measure's rest status
 	private boolean[] nextRestMeasures; // the upcoming rest measures
-	private int[] alphas; // alpha is color transparency, and the factor by which the colors are faded if it's a rest measure
+	private int[] instrumentAlphas; // alpha is color transparency, and the factor by which the colors are faded if it's a rest measure
+
 	private Color tempColor; // declare space for a temporary color now so we can just overwrite at every iteration
 	
 	private int currentMeasure; // the measure we are on
@@ -51,6 +53,7 @@ public class Orchestra {
 	private int blockHeight; // height of the blocks
 	private Font instrumentFont; // font for the labels
 	private Font measureNumFont; // font for the measure number display
+	private Font dynamicsFont; // font for the dynamics word display
 	
 	
 	public Orchestra(List<MusicPart> partList) {
@@ -62,11 +65,12 @@ public class Orchestra {
 		dynamics = new int[numParts];
 		nextDynamics = new int[numParts];
 		dynamicsChange = new int[numParts];
+		wordAlphas = new int[numParts];
 		
 		restMeasures = new boolean[numParts];
 		prevRestMeasures = new boolean[numParts];
 		nextRestMeasures = new boolean[numParts];
-		alphas = new int[numParts];
+		instrumentAlphas = new int[numParts];
 		
 		currentMeasure = 0;
 		
@@ -75,9 +79,10 @@ public class Orchestra {
 		for(MusicPart part : partList) {
 			instrumentList[i] = part.getInstrumentName();
 			
-			dynamics[i] = 76; // initial dynamics are all 76 (default value)
+			dynamics[i] = 72; // initial dynamics are all 72 (default value)
 			nextDynamics[i] = part.getMeasures().get(0).getDynamics(); // dynamics for the first measure
 			dynamicsChange[i] = nextDynamics[i] - dynamics[i]; // decreasing if <0, increasing if >0
+			wordAlphas[i] = 255; // when each word appears, it will be fully opaque and will then fade out
 			
 			restMeasures[i] = part.getMeasures().get(0).isRestMeasure(); // see if the first measure is a rest measure for any of the parts
 			prevRestMeasures[i] = false;
@@ -85,10 +90,10 @@ public class Orchestra {
 				nextRestMeasures[i] = part.getMeasures().get(1).isRestMeasure(); // next measure
 			}
 			if(restMeasures[i] == true) { // if the starting measure is a rest measure for instrument at index i...
-				alphas[i] = 30; // start off transparent
+				instrumentAlphas[i] = 30; // start off transparent
 			}
 			else{ // otherwise...
-				alphas[i] = 255; // start off completely opaque
+				instrumentAlphas[i] = 255; // start off completely opaque
 			}
 			
 			i++;
@@ -102,8 +107,9 @@ public class Orchestra {
 		blockLength = (int)((RIGHT_BOUND - LEFT_BOUND) / numParts); // the distance we have, split between numParts
 		blockHeight = 150;
 		
-		instrumentFont = new Font("Gabriola", Font.PLAIN, 30); // font for the labels
-		measureNumFont = new Font("Gabriola", Font.PLAIN, 50); // font for the measure number display
+		instrumentFont = new Font("Cambria", Font.PLAIN, 26); // font for the labels
+		measureNumFont = new Font("Cambria", Font.PLAIN, 40); // font for the measure number display
+		dynamicsFont = new Font("Cambria", Font.PLAIN, 20); // font for the dynamics word display
 		
 		bpBar = partList.get(0).getMeasures().get(0).getBeats(); // beats per bar
     	beatType = partList.get(0).getMeasures().get(0).getBeatType(); // beat type
@@ -187,7 +193,9 @@ public class Orchestra {
 			for(MusicPart part : partList) {
 				
 				// dynamics
-				if(nextDynamics[i] == 76) { // if we're going back to normal dynamics
+				wordAlphas[i] = 255; // reset back to fully opaque
+				
+				if(nextDynamics[i] == 72) { // if we're going back to normal dynamics
 					dynamicsChange[i] = 0; // we want this here so that we don't display an up in dynamics every time we're getting out of a down
 				}
 				else {
@@ -235,58 +243,86 @@ public class Orchestra {
 	
 	private void adjustAlphas(int i) { // fix the alphas[i] based on prevRestMeasures[i] and restMeasures[i]
 		
-
 		if(prevRestMeasures[i] == true && restMeasures[i] == false) { // if prev is a rest measure and current is not, fade in
-			alphas[i] = alphas[i] + 2;
-			if(alphas[i] > 255) alphas[i] = 255; // max allowed is 255 (completely opaque)
+			instrumentAlphas[i] = instrumentAlphas[i] + 3;
+			if(instrumentAlphas[i] > 255) instrumentAlphas[i] = 255; // max allowed is 255 (completely opaque)
 //			System.out.println("   Fading in! Measure : " + currentMeasure);
 		}
 		else if(restMeasures[i] == false && nextRestMeasures[i] == true) { // if current is not a rest measure and next is, fade out
-			alphas[i] = alphas[i] - 2; // decrease alpha
-			if(alphas[i] < 30) alphas[i] = 30; // alpha goes no lower than 30, since we still want to see a block there
+			instrumentAlphas[i] = instrumentAlphas[i] - 3; // decrease alpha
+			if(instrumentAlphas[i] < 30) instrumentAlphas[i] = 30; // alpha goes no lower than 30, since we still want to see a block there
 //			System.out.println("Fading out! Measure : " + currentMeasure);
 		}
-		
 
 	}
 	
+	private String getDynamicsString(int d) { // given the integer of the dynamics, return the string that would represent this
+		if(d <= 25) return "pianississimo"; // ppp; average between 16(ppp) and 33(pp)
+		if(d <= 41) return "pianissimo"; // pp; average between 33(pp) and 49(p)
+		if(d <= 57) return "piano"; // p; average between 49(p) and 64(mp)
+		if(d <= 72) return "mezzo-piano"; // mp; average between 64(mp) and 80(mf)
+		if(d <= 88) return "mezzo-forte"; // mf; average between 80(mf) and 96(f)
+		if(d <= 104) return "forte"; // f; average between 96(f) and 112(ff)
+		if(d <= 120) return "fortissimo"; // ff; average between 112(ff) and 127(fff)
+		else return "fortississimo"; // fff
+	}
+	
 	public void draw(Graphics g) {
-		
-		g.setFont(instrumentFont);
 		
 		for(int i = 0; i < numParts; i++) { // draw the block for each part
 			
 			// draw the blocks
 			tempColor = colorList[(colorListOffset + i) % 12]; // the color we're supposed to draw
-			tempColor = new Color(tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue(), alphas[i]); // set the new alpha value
+			tempColor = new Color(tempColor.getRed(), tempColor.getGreen(), tempColor.getBlue(), instrumentAlphas[i]); // set the new alpha value
 			g.setColor(tempColor); // use this color
 			g.fillRoundRect(LEFT_BOUND + blockLength * i, TOP_BOUND, blockLength - 10, blockHeight, 20, 20);
 			
 			
 			// draw the words for the instruments
+			g.setFont(instrumentFont);
 			g.setColor(FONT_COLOR);
 			g.drawString(instrumentList[i], LEFT_BOUND + blockLength * i + 5, TOP_BOUND + blockHeight + 10);
-			
 
 			
-			// draw the arrows
+			// draw the arrows and words for dynamics
 			if(dynamicsChange[i] < 0) { // dynamics are decreasing; down arrow
+				// arrow
 				g.setColor(DOWN_COLOR);
 				drawDownTriangle(g, i);
+				
+				// draw the dynamics words below the arrow
+				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
+					g.setFont(dynamicsFont);
+					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
+					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + 20, TOP_BOUND + blockHeight + 85);
+					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
+					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
+				}
 			}
 			if(dynamicsChange[i] > 0) { // dynamics are increasing; up arrow
 				g.setColor(UP_COLOR);
 				drawUpTriangle(g, i);
+				
+				// draw the dynamics words above the arrow
+				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
+					g.setFont(dynamicsFont);
+					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
+					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + 20, TOP_BOUND - 50);
+					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
+					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
+				}
 			}
+			
+			
 		}
 		
 		// draw the words for the measure number and time signature
 		g.setFont(measureNumFont);
 		g.setColor(FONT_COLOR);
 		g.drawString("Time Signature: ", 600, 700);
-		g.drawString("" + bpBar, 860, 675);
-		g.drawString("" + beatType, 880, 705);
-		g.drawString("Measure:   " + partList.get(0).getMeasures().get(currentMeasure).getNumber(), 600, 800);
+		g.drawString("" + bpBar, 875, 675);
+		g.drawString("" + beatType, 895, 705);
+		g.drawString("Measure:   " + partList.get(0).getMeasures().get(currentMeasure).getNumber() + "       out of   " + partList.get(0).getMeasures().size(), 600, 800);
 		
 		
 	}

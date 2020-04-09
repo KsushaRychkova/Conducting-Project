@@ -26,6 +26,7 @@ public class MusicXMLHandler extends DefaultHandler {
 	// booleans used to help with parsing
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
+	//private boolean bDynamics = false;
 	private boolean bPartName = false;
 	private boolean bInstrumentName = false;
 	private boolean bWorkTitle = false;
@@ -153,12 +154,42 @@ public class MusicXMLHandler extends DefaultHandler {
 				measure.setDynamics(dynamics); // set the measure's dynamics value
 			}
 		}
+		
+		// dynamics (represented by p, f, pp, ff, etc.)
+		if(qName.equalsIgnoreCase("ppp")) {
+			measure.setDynamics(16);
+		}
+		if(qName.equalsIgnoreCase("pp")) {
+			measure.setDynamics(33);
+		}
+		if(qName.equalsIgnoreCase("p")) {
+			measure.setDynamics(49);
+		}
+		if(qName.equalsIgnoreCase("mp")) {
+			measure.setDynamics(64);
+		}
+		if(qName.equalsIgnoreCase("mf")) {
+			measure.setDynamics(80);
+		}
+		if(qName.equalsIgnoreCase("f")) {
+			measure.setDynamics(96);
+		}
+		if(qName.equalsIgnoreCase("ff")) {
+			measure.setDynamics(112);
+		}
+		if(qName.equalsIgnoreCase("fff")) {
+			measure.setDynamics(127);
+		}
+		
 		// rest measures
 		if(qName.equalsIgnoreCase("rest")) {
 			String restS = attributes.getValue("measure"); // rest attribute as a string
 			if(restS != null && restS.equals("yes")) { // if the musicxml file says this: <rest measure="yes"/>
 				measure.setRest(true);
 			}
+		}
+		if(qName.equalsIgnoreCase("pitch")) { // if the measure contains a note that has a pitch...
+			measure.setRest(false); // then it is not a rest measure.
 		}
 		
 		
@@ -211,6 +242,12 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 		// since some measures don't have a beats or beat-type listed, those measures will not set those values and will have the default values instead (0)
 		
+		/*
+		if(bDynamics) {
+			measure.setDynamics(determineDynamicsValue(data.toString()));
+			bDynamics = false;
+			// Note: dynamics can appear in two different ways in musicxml. If it appears as an explicitly stated value, it will come AFTER the string.
+		}*/
 		
 		if(qName.equalsIgnoreCase("score-part")) {
 			instrumentList.add(instrument);
@@ -254,6 +291,19 @@ public class MusicXMLHandler extends DefaultHandler {
 			}
 		}
 	}
+	/*
+	private int determineDynamicsValue(String s) { // given the dynamics string, return the dynamics value associated with it
+		// these values are the typical midi values for these strings
+		if(s.equals("ppp")) return 16;
+		if(s.equals("pp")) return 33;
+		if(s.equals("p")) return 49;
+		if(s.equals("mp")) return 64;
+		if(s.equals("mf")) return 80;
+		if(s.equals("f")) return 96;
+		if(s.equals("ff")) return 112;
+		if(s.equals("fff")) return 127;
+		else return 72; // the default dynamics for our program
+	}*/
 	
 	public List<MusicPart> getPartList(){
 		return partList;

@@ -16,8 +16,8 @@ public class Measure {
 		beats = 0;
 		beatType = 0;
 		tempo = 0;
-		dynamics = 76; // I'm making the default 76 because it's the average of piano (54) and forte (98)
-		rest = false; // default is false
+		dynamics = 72; // I'm making the default 72 because it's the average of mp (64) and mf (80)
+		rest = true; // default is true
 		
 	}
 	

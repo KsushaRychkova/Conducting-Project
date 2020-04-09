@@ -20,8 +20,8 @@ import javax.sound.midi.*;
 public class MyPanel extends JPanel implements Runnable {
 	
 	// constants
-    //private final int DELAY = 20; // 20 millisecond delay = 50 fps
-    private final int DELAY = 10; // 10 millisecond delay = 100 fps
+    private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    //private final int DELAY = 10; // 10 millisecond delay = 100 fps
     private final Color BG_COLOR = Color.BLACK;
 	private final Color FONT_COLOR = Color.white; // color of the font
     
@@ -33,7 +33,8 @@ public class MyPanel extends JPanel implements Runnable {
     private RightHand rightHand;
     private Orchestra orchestra;
     private double fps;
-    private int bpMin;
+    private int bpMin; // represents tempo
+    private int newTempo; // a new tempo
     private int bpBar;
     private List<MusicPart> partList;
     private PieceInfo pieceInfo;
@@ -107,6 +108,14 @@ public class MyPanel extends JPanel implements Runnable {
     	rightHand.update(); // right hand takes care of the updates
     	orchestra.update(measureNum);
     	measureNum = rightHand.getMeasureNum();
+    	if(measureNum < partList.get(0).getMeasures().size()) {
+    		newTempo = partList.get(0).getMeasures().get(measureNum).getTempo(); // get the tempo of the new measure
+    	}
+    	if(newTempo <= 0) newTempo = bpMin; // default is 0, if the tempo was not specified for this measure, it's the same as previous measure
+    	else {
+    		bpMin = newTempo; // set the new tempo
+    		rightHand.setbpM(newTempo); // set the new tempo for rightHand, too. It automatically updates the rest of its variables
+    	}
     	
     	checkIfEnd();
     	
@@ -133,13 +142,13 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		g.setColor(FONT_COLOR);
 		
-		Font titleFont = new Font("Goudy Old Style", Font.PLAIN, 60); // font for the title
+		Font titleFont = new Font("Cambria", Font.PLAIN, 60); // font for the title
 		FontMetrics titleMetrics = g.getFontMetrics(titleFont); // information about that font
 		
-		Font subtitleFont = new Font("Goudy Old Style", Font.PLAIN, 50); // font for the subtitle
+		Font subtitleFont = new Font("Cambria", Font.PLAIN, 50); // font for the subtitle
 		FontMetrics subtitleMetrics = g.getFontMetrics(subtitleFont); // information about that font
 		
-		Font contribFont = new Font("Goudy Old Style", Font.PLAIN, 36); // font for the contributors
+		Font contribFont = new Font("Cambria", Font.PLAIN, 36); // font for the contributors
 		FontMetrics contribMetrics = g.getFontMetrics(contribFont); // information about that font
 		
 		String title = pieceInfo.getTitle();

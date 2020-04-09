@@ -153,7 +153,8 @@ public class RightHand {
 	}
 	public void setbpM(int bpM) {
 		bpMin = bpM;
-		fpBeat = (int)(fps * 60.0 / (double)bpMin);
+		fpBeat = (int)(fps * 60.0 / (double)bpMin); // automatically update fpBeat since it depends entirely on the fps and bpMin
+		pattern.setFpBeat(fpBeat); // update it in the pattern
 	}
 	public int getMeasureNum() {
 		return measureNum;
