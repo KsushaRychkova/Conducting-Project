@@ -1,21 +1,16 @@
-/* Mentored Research
+/* Mentored Research Fall 2019 - Spring 2020
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
  */
 
-
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
-
 
 
 public class MyWindow extends JFrame implements Runnable, MouseListener {
@@ -24,7 +19,6 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 	private final int WIDTH = 1500;
 	private final int HEIGHT = 1000;
 	
-	private File selectedFile;
 	private MyPanel panel;
 	
 	
@@ -50,7 +44,6 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
         
 		this.addMouseListener(this); // add mouse listener, so that when the user clicks, it pauses or unpauses the animation
         
-        
 	}
 	
 	
@@ -58,7 +51,6 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 	public void run() {
 		setVisible(true);
 	}
-	
 	
 
 	@Override
@@ -69,11 +61,13 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 		
 	}
 
+	
+	
+	// =========== we don't need these, but MouseListener requires them here anyway ===================
+	
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-		
 		
 	}
 
@@ -94,7 +88,5 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
-
-	
 	
 }

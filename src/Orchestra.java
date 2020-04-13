@@ -1,3 +1,11 @@
+/* Mentored Research Fall 2019 - Spring 2020
+ * Student: Kseniya Rychkova
+ * Mentor: Dr. Salgian
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
+ */
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -246,12 +254,10 @@ public class Orchestra {
 		if(prevRestMeasures[i] == true && restMeasures[i] == false) { // if prev is a rest measure and current is not, fade in
 			instrumentAlphas[i] = instrumentAlphas[i] + 3;
 			if(instrumentAlphas[i] > 255) instrumentAlphas[i] = 255; // max allowed is 255 (completely opaque)
-//			System.out.println("   Fading in! Measure : " + currentMeasure);
 		}
 		else if(restMeasures[i] == false && nextRestMeasures[i] == true) { // if current is not a rest measure and next is, fade out
 			instrumentAlphas[i] = instrumentAlphas[i] - 3; // decrease alpha
 			if(instrumentAlphas[i] < 30) instrumentAlphas[i] = 30; // alpha goes no lower than 30, since we still want to see a block there
-//			System.out.println("Fading out! Measure : " + currentMeasure);
 		}
 
 	}
@@ -294,7 +300,7 @@ public class Orchestra {
 				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
 					g.setFont(dynamicsFont);
 					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
-					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + 20, TOP_BOUND + blockHeight + 85);
+					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND + blockHeight + 85);
 					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
 					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
 				}
@@ -307,7 +313,7 @@ public class Orchestra {
 				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
 					g.setFont(dynamicsFont);
 					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
-					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + 20, TOP_BOUND - 50);
+					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND - 50);
 					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
 					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
 				}

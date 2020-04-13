@@ -1,7 +1,14 @@
+/* Mentored Research Fall 2019 - Spring 2020
+ * Student: Kseniya Rychkova
+ * Mentor: Dr. Salgian
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
+ */
 
 public class Measure {
 
-	private final int DEFAULT_DYNAMICS = 90; // musicxml's default value for the dynamics. The dynamics listed in the musicxml are percentages
+	private final int DEFAULT_DYNAMICS = 72; // I'm making the default 72 because it's the average of mp (64) and mf (80)
 	
 	private int number; // the number value from the musicxml file
 	private int beats; // beats per measure
@@ -15,8 +22,8 @@ public class Measure {
 		this.number = number;
 		beats = 0;
 		beatType = 0;
-		tempo = 0;
-		dynamics = 72; // I'm making the default 72 because it's the average of mp (64) and mf (80)
+		tempo = 120; // this is midi's default, if tempo is not listed
+		dynamics = DEFAULT_DYNAMICS;
 		rest = true; // default is true
 		
 	}

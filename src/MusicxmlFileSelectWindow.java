@@ -1,7 +1,13 @@
+/* Mentored Research Fall 2019 - Spring 2020
+ * Student: Kseniya Rychkova
+ * Mentor: Dr. Salgian
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
+ */
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -10,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 
 public class MusicxmlFileSelectWindow extends JFrame implements Runnable, ActionListener{
 
@@ -49,6 +54,9 @@ public class MusicxmlFileSelectWindow extends JFrame implements Runnable, Action
 			chooser.setMultiSelectionEnabled(false); // only allow for one file to be selected
 			chooser.setDialogTitle("Select a .musicxml file"); // title of the chooser window
 			
+			File workingDirectory = new File(System.getProperty("user.dir")); // get user's current directory
+			chooser.setCurrentDirectory(workingDirectory); // user's current directory
+			
 			FileNameExtensionFilter restriction = new FileNameExtensionFilter("MusicXML Files (*.musicxml)", "musicxml"); // only .musicxml files
             chooser.setFileFilter(restriction); // restrict the files user can select
 			
@@ -62,7 +70,7 @@ public class MusicxmlFileSelectWindow extends JFrame implements Runnable, Action
 				
 			}
 			else {
-				//label.setText("Cancelled.");
+				// don't do anything
 			}
 
 		}

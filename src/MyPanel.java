@@ -1,7 +1,9 @@
-/* Mentored Research
+/* Mentored Research Fall 2019 - Spring 2020
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
  */
 
 
@@ -93,7 +95,7 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		
     	// right hand
-		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), partList);
+		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
 		
 		
 		// orchestra
@@ -121,7 +123,7 @@ public class MyPanel extends JPanel implements Runnable {
     	
     }
     
-	private void checkIfEnd() {
+	private void checkIfEnd() { // check if it's the end of the music
 		for(MusicPart part : partList) {
 			if(measureNum < part.getMeasures().size()) { // if there is still a part that hasn't reached the end...
 				isEnd = false; // set it to false
@@ -180,17 +182,6 @@ public class MyPanel extends JPanel implements Runnable {
 		int[] yPoly = {400,450,425};
 		g.setColor(new Color(109, 182, 254)); // a light blue
 		g.fillPolygon(xPoly, yPoly, 3);
-	}
-	
-	private void drawPauseButton(Graphics g) { // draw the pause button if the animation is paused
-		g.setColor(new Color(109, 182, 254)); // a light blue
-		g.fillOval(700, 450, 100, 100);
-		g.setColor(Color.WHITE);
-		/*
-		g.fillRect(730, 480, 10, 60);
-		g.fillRect(750, 480, 10, 60);
-		*/
-		
 	}
 	
 	@Override

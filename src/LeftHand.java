@@ -1,17 +1,16 @@
-/* Mentored Research
+/* Mentored Research Fall 2019 - Spring 2020
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
  */
 
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
 
 
 public class LeftHand {

@@ -1,7 +1,9 @@
-/* Mentored Research
+/* Mentored Research Fall 2019 - Spring 2020
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
  */
 
 import java.util.ArrayList;
@@ -13,6 +15,11 @@ import org.xml.sax.helpers.DefaultHandler;
 
 
 public class MusicXMLHandler extends DefaultHandler {
+	
+	/* This is the class that parses the musicxml file. It's instantiated inside Main, and once it's done, Main obtains the completed
+	 * partList as well as the musicInfo from this class. The partList contains all the information we need about the music, and 
+	 * musicInfo contains all the information we need about the title, authors, and movement of the piece.
+	 */
 	
 	private List<MusicPart> partList;
 	private List<Instrument> instrumentList;
@@ -26,7 +33,6 @@ public class MusicXMLHandler extends DefaultHandler {
 	// booleans used to help with parsing
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
-	//private boolean bDynamics = false;
 	private boolean bPartName = false;
 	private boolean bInstrumentName = false;
 	private boolean bWorkTitle = false;
@@ -51,7 +57,7 @@ public class MusicXMLHandler extends DefaultHandler {
 		data = null;
 		pieceInfo = new PieceInfo();
 		
-		tempo = 0; // default to 0 so we can identify it later
+		tempo = 120; // default is 120, if it's not listed then it's 120
 		isFirstMeasure = false;
 		implicitFlag = false;
 		
@@ -242,12 +248,6 @@ public class MusicXMLHandler extends DefaultHandler {
 		}
 		// since some measures don't have a beats or beat-type listed, those measures will not set those values and will have the default values instead (0)
 		
-		/*
-		if(bDynamics) {
-			measure.setDynamics(determineDynamicsValue(data.toString()));
-			bDynamics = false;
-			// Note: dynamics can appear in two different ways in musicxml. If it appears as an explicitly stated value, it will come AFTER the string.
-		}*/
 		
 		if(qName.equalsIgnoreCase("score-part")) {
 			instrumentList.add(instrument);
@@ -291,19 +291,9 @@ public class MusicXMLHandler extends DefaultHandler {
 			}
 		}
 	}
-	/*
-	private int determineDynamicsValue(String s) { // given the dynamics string, return the dynamics value associated with it
-		// these values are the typical midi values for these strings
-		if(s.equals("ppp")) return 16;
-		if(s.equals("pp")) return 33;
-		if(s.equals("p")) return 49;
-		if(s.equals("mp")) return 64;
-		if(s.equals("mf")) return 80;
-		if(s.equals("f")) return 96;
-		if(s.equals("ff")) return 112;
-		if(s.equals("fff")) return 127;
-		else return 72; // the default dynamics for our program
-	}*/
+
+	
+	// ================================= get methods =====================================
 	
 	public List<MusicPart> getPartList(){
 		return partList;

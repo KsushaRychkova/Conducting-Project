@@ -1,14 +1,14 @@
-/* Mentored Research
+/* Mentored Research Fall 2019 - Spring 2020
  * Student: Kseniya Rychkova
  * Mentor: Dr. Salgian
- * Project: Testing out the use of JFrame and JPanel to create 2D animations with Java.
+ * Conducting Animation Project
+ * 		The program is able to take as input a .musicxml file and its respective .mid (midi) file, parse the musicxml, and output a 
+ * 		conducting animation to play alongside the music from the midi file.
  */
-
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 
@@ -37,18 +37,16 @@ public class RightHand {
 	private Color bgColor;
 	
 	private RightHandPattern pattern;
-	private List<MusicPart> partList;
 	
 	
 	// constructors
-	public RightHand(double fps, int bpM, int bpB, int x0, int y0, Color bg, List<MusicPart> partList) {
+	public RightHand(double fps, int bpM, int bpB, int x0, int y0, Color bg) {
 		this.fps = fps;
 		bpMin = bpM;
 		bpBar = bpB;
 		xOffset = x0;
 		yOffset = y0;
 		bgColor = bg;
-		this.partList = partList;
 		
 		fpBeat = fps * 60.0 / (double)bpMin; // find fbBeat from the fps and bpMin
 		color = COLOR;
