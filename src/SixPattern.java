@@ -11,10 +11,9 @@ public class SixPattern extends RightHandPattern {
 	private final int BEATS_PER_BAR = 6;
 	
 	
-	public SixPattern(double fpB) {
-		super(fpB);
+	public SixPattern(double fpB, int startBeat) {
+		super(fpB, startBeat);
 		bpBar = BEATS_PER_BAR;
-		beatNum = 0; // starting beat number; MAKE SURE TO CHANGE THIS IF NEEDED
 	}
 
 	@Override
@@ -39,27 +38,30 @@ public class SixPattern extends RightHandPattern {
 			case 1: // beat 1 jumps from loc0 to the right
 				x = 25.0 * t + 125.0; // x moves linearly from 150 to 100 (since t moves from 1 to -1)
 				xloc = (int)x; // start at 150, end at 100
-				yloc = (int)( 0.04 * (x - 125)*(x - 125) + 275 ); // start at 300, end at 300
+				yloc = (int)( 0.04 * (x - 125.0)*(x - 125.0) + 275.0 ); // start at 300, end at 300
 				break;
 			case 2: // beat 2 jumps from loc1 to the right again
 				x = 25.0 * t + 75.0; // x moves linearly from 100 to 50 (since t moves from 1 to -1)
 				xloc = (int)x; // start at 100, end at 50
-				yloc = (int)( 0.04 * (x - 75)*(x - 75) + 275 ); // start at 300, end at 300
+				yloc = (int)( 0.04 * (x - 75.0)*(x - 75.0) + 275.0 ); // start at 300, end at 300
 				break;
 			case 3: // beat 3 jumps from loc2 to the left side
-				x = -50.0 * t + 150.0; // x moves linearly from 50 to 200 (since t moves from 1 to -1)
-				xloc = (int)x; // start at 50, end at 200
-				yloc = (int)(-75.0*(Math.sin(Math.pow(4.58343/150.0*x-7.11681, 2.0)/10.0) + 1.0/(10.0*(4.58343/150.0*x-7.11681))) + 300); // start at 300, end at 300
+				x = -100.0 * t + 150.0; // x moves linearly from 50 to 250 (since t moves from 1 to -1)
+				xloc = (int)x; // start at 50, end at 250
+				yloc = (int)(-Math.sqrt(200.0 * (x-50.0)) + (x-50.0) + 300); // start at 300, end at 300
 				break;
-			case 4:
-				
+			case 4: // beat 4 jumps from loc3 to the left
+				x = -25.0 * t + 275.0; // x moves linearly from 250 to 300 (since t moves from 1 to -1)
+				xloc = (int)x; // start at 250, end at 300
+				yloc = (int)( 0.04 * (x - 275.0)*(x - 275.0) + 275.0 ); // start at 300, end at 300
 				break;
-			case 5:
-				
+			case 5: // beat 5 swings up from loc4 to the initial point
+				x = 75.0 * t + 225.0; // x moves linearly from 300 to 150 (since t moves from 1 to -1)
+				xloc = (int)x; // start at 300, end at 150
+				yloc = (int)(150.0 * t + 150.0); // start at 300, end at 0
 				break;
 				
 		}
-		
 		frameNum++;
 		totalframes++;
 		

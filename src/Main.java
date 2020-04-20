@@ -27,6 +27,7 @@ public class Main {
 		File midiFile; // the midi file
 		List<MusicPart> partList = null;
 		PieceInfo pieceInfo = null;
+		int startBeat = 0; // the beat number we start on (>0 if there is a measure 0)
 		
 		
 		// ============================== get the files ==============================
@@ -66,6 +67,7 @@ public class Main {
 	        
 	        partList = handler.getPartList(); // obtains the partList after parsing
 	        pieceInfo = handler.getPieceInfo(); // obtains the PieceInfo
+	        startBeat = handler.getStartBeat();
 	        
 
 	    } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -74,7 +76,7 @@ public class Main {
 	    }
 	    
 		// ============================== begin the program ==============================
-		EventQueue.invokeLater(new MyWindow(partList, pieceInfo, midiFile));
+		EventQueue.invokeLater(new MyWindow(partList, pieceInfo, midiFile, startBeat));
 		
 			
 	}

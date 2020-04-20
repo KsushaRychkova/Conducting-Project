@@ -38,6 +38,7 @@ public class MyPanel extends JPanel implements Runnable {
     private int bpMin; // represents tempo
     private int newTempo; // a new tempo
     private int bpBar;
+    private int startBeat;
     private List<MusicPart> partList;
     private PieceInfo pieceInfo;
     
@@ -51,11 +52,12 @@ public class MyPanel extends JPanel implements Runnable {
     private Sequence sequence; // the info to be given to the sequencer
 
 	
-	public MyPanel(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
+	public MyPanel(List<MusicPart> partList, PieceInfo pieceInfo, File midifile, int startBeat) {
 		
 		this.partList = partList;
 		this.pieceInfo = pieceInfo;
 		this.pieceInfo.createTitles(); // need to do this now that we have all the information we need
+		this.startBeat = startBeat;
 		
 		initPanel();
 		
@@ -81,7 +83,6 @@ public class MyPanel extends JPanel implements Runnable {
     	bpBar = partList.get(0).getMeasures().get(0).getBeats(); // partList's first part, first measure's number of beats
     	bpMin = partList.get(0).getMeasures().get(0).getTempo(); // partList's first part, first measure's tempo
     	
-    	
     	// variables
 		fps = 1000.0 / (double)DELAY;
 		measureNum = 0;
@@ -95,7 +96,7 @@ public class MyPanel extends JPanel implements Runnable {
 		
 		
     	// right hand
-		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground());
+		rightHand = new RightHand(fps, bpMin, bpBar, RH_WINDOW_X0, RH_WINDOW_Y0, this.getBackground(), startBeat);
 		
 		
 		// orchestra
@@ -113,12 +114,10 @@ public class MyPanel extends JPanel implements Runnable {
     	if(measureNum < partList.get(0).getMeasures().size()) {
     		newTempo = partList.get(0).getMeasures().get(measureNum).getTempo(); // get the tempo of the new measure
     	}
-    	if(newTempo <= 0) newTempo = bpMin; // default is 0, if the tempo was not specified for this measure, it's the same as previous measure
-    	else {
+    	if(newTempo != rightHand.getbpM()){
     		bpMin = newTempo; // set the new tempo
     		rightHand.setbpM(newTempo); // set the new tempo for rightHand, too. It automatically updates the rest of its variables
     	}
-    	
     	checkIfEnd();
     	
     }

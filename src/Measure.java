@@ -22,7 +22,7 @@ public class Measure {
 		this.number = number;
 		beats = 0;
 		beatType = 0;
-		tempo = 120; // this is midi's default, if tempo is not listed
+		tempo = 0;
 		dynamics = DEFAULT_DYNAMICS;
 		rest = true; // default is true
 		

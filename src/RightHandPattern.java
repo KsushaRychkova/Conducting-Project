@@ -21,16 +21,17 @@ public abstract class RightHandPattern {
 	protected double beatframecount; // count the frames we've had to ensure we didn't lose any if fpBeat is a decimal
 	protected long totalframes; // total number of frames we have actually drawn
 	protected int fpBeatInt; // how many frames per beat we actually have to display
+	protected int startBeat; // which beat we start the piece on
 	
 	protected int bpBar; // this one changes based on each pattern
 
 	
-	public RightHandPattern(double fpB) {
+	public RightHandPattern(double fpB, int startBeat) {
 		fpBeat = fpB;
 		fpBeatInt = round(fpBeat);
 		xloc = INITIAL_X;
 		yloc = INITIAL_Y;
-		beatNum = 0;
+		beatNum = startBeat;
 		frameNum = 0;
 		measureNum = 0;
 		beatframecount = fpBeat; // start at fpBeat so we know how many we need to do next

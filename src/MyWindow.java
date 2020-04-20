@@ -22,13 +22,13 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 	private MyPanel panel;
 	
 	
-	public MyWindow(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
+	public MyWindow(List<MusicPart> partList, PieceInfo pieceInfo, File midifile, int startBeat) {
 		
-		initUI(partList, pieceInfo, midifile);
+		initUI(partList, pieceInfo, midifile, startBeat);
 		
 	}
 	
-	private void initUI(List<MusicPart> partList, PieceInfo pieceInfo, File midifile) {
+	private void initUI(List<MusicPart> partList, PieceInfo pieceInfo, File midifile, int startBeat) {
 		
 		// jpanel stuff
 		setSize(WIDTH, HEIGHT);
@@ -39,7 +39,7 @@ public class MyWindow extends JFrame implements Runnable, MouseListener {
 		
 		
 		
-        panel = new MyPanel(partList, pieceInfo, midifile); // create panel
+        panel = new MyPanel(partList, pieceInfo, midifile, startBeat); // create panel
         add(panel);
         
 		this.addMouseListener(this); // add mouse listener, so that when the user clicks, it pauses or unpauses the animation

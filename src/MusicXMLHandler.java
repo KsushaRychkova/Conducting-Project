@@ -34,6 +34,7 @@ public class MusicXMLHandler extends DefaultHandler {
 	private boolean bBeats = false;
 	private boolean bBeatType = false;
 	private boolean bPartName = false;
+	private boolean bType = false;
 	private boolean bInstrumentName = false;
 	private boolean bWorkTitle = false;
 	private boolean bWorkNumber = false;
@@ -45,6 +46,9 @@ public class MusicXMLHandler extends DefaultHandler {
 	private int tempo; // save the value of the tempo to be used in future measures
 	private boolean isFirstMeasure; // true only for the first measure
 	private boolean implicitFlag; // flag implicit measures so we know to ignore them
+	private boolean measureZero; // flag turns on if we are on measure 0
+	private double countBeats; // to add up the beats in measure 0
+	private int startBeat; // find this out if there is an implicit measure 0
 	
 	
 	public MusicXMLHandler() {
@@ -60,6 +64,9 @@ public class MusicXMLHandler extends DefaultHandler {
 		tempo = 120; // default is 120, if it's not listed then it's 120
 		isFirstMeasure = false;
 		implicitFlag = false;
+		measureZero = false;
+		countBeats = 0.0;
+		startBeat = 0;
 		
 		
 	}
@@ -118,7 +125,7 @@ public class MusicXMLHandler extends DefaultHandler {
 			isFirstMeasure = true;
 		}
 		
-		//measure
+		// measure
 		if(qName.equalsIgnoreCase("measure")) {
 			String implicitS = attributes.getValue("implicit");
 			String measureNumS = attributes.getValue("number"); // get the number of the measure
@@ -126,6 +133,7 @@ public class MusicXMLHandler extends DefaultHandler {
 				if(implicitS != null && isFirstMeasure) { // the measure is implicit and it's the first measure of the part...
 					int measureNum = 0; // set the measure number to 0
 					measure = new Measure(measureNum); // create the measure with that number
+					measureZero = true;
 				}
 				else if(implicitS != null && isFirstMeasure == false) { // if the measure is implicit and it's not the first measure...
 					implicitFlag = true;
@@ -135,6 +143,11 @@ public class MusicXMLHandler extends DefaultHandler {
 					measure = new Measure(measureNum); // create the measure with that number
 				}
 			}
+		}
+		
+		// implicit measure 0 - count beats
+		if(qName.equalsIgnoreCase("type") && measureZero) {
+			bType = true;
 		}
 		
 		// time signature (part of measure)
@@ -249,6 +262,25 @@ public class MusicXMLHandler extends DefaultHandler {
 		// since some measures don't have a beats or beat-type listed, those measures will not set those values and will have the default values instead (0)
 		
 		
+		// implicit measure 0 - count beats
+		if(bType && measureZero) {
+			int beatType = measure.getBeatType(); // this is the bottom number of the time signature
+			int noteType = 1;
+			if(data.toString().equals("eighth")) { // if the note type is an eighth
+				noteType = 8;
+			}
+			else if(data.toString().equals("quarter")) { // if the note type is a quarter
+				noteType = 4;
+			}
+			else if(data.toString().equals("half")) { // if the note type is a half
+				noteType = 2;
+			}
+			// more can be added if needed
+			countBeats += (double)beatType / (double)noteType; // add to the tally of beats
+			bType = false;
+		}
+		
+		
 		if(qName.equalsIgnoreCase("score-part")) {
 			instrumentList.add(instrument);
 		}
@@ -260,7 +292,13 @@ public class MusicXMLHandler extends DefaultHandler {
 			else { // add the measure to the part only if it's not an implicit measure
 				part.addMeasure(measure); 
 			}
+			if(measureZero) {
+				startBeat = measure.getBeats() - (int)countBeats; // startBeat = number of beats in a measure - number of beats in measure 0
+				measureZero = false; // set back to false if it was true
+				countBeats = 0.0; // reset back for the next time we find a measure 0 in the piece
+			}
 			isFirstMeasure = false; // no longer the first measure after this point
+			
 		}
 		if(qName.equalsIgnoreCase("part")) { // if we've reached the end of the part
 			matchInstrumentToPart(); // get the instrument name for the part
@@ -300,6 +338,9 @@ public class MusicXMLHandler extends DefaultHandler {
 	}
 	public PieceInfo getPieceInfo() {
 		return pieceInfo;
+	}
+	public int getStartBeat() {
+		return startBeat;
 	}
 	
 }

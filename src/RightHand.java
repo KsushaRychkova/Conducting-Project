@@ -25,6 +25,7 @@ public class RightHand {
 	private int bpBar; // beats per bar
 	private double fps;
 	private double fpBeat; // length of one beat in frames = fps * 60 / bpmin
+	private double startBeat; // if there is a measure 0, this will be > 0. If there is no measure 0, this will be 0.
 	
 	// variables that will be changed
 	private int xloc, yloc; // current location; NOTE: these locations are only with respect to the window
@@ -40,13 +41,14 @@ public class RightHand {
 	
 	
 	// constructors
-	public RightHand(double fps, int bpM, int bpB, int x0, int y0, Color bg) {
+	public RightHand(double fps, int bpM, int bpB, int x0, int y0, Color bg, int startBeat) {
 		this.fps = fps;
 		bpMin = bpM;
 		bpBar = bpB;
 		xOffset = x0;
 		yOffset = y0;
 		bgColor = bg;
+		this.startBeat = startBeat;
 		
 		fpBeat = fps * 60.0 / (double)bpMin; // find fbBeat from the fps and bpMin
 		color = COLOR;
@@ -56,16 +58,16 @@ public class RightHand {
 				
 				break;
 			case 2:
-				pattern = new TwoFourPattern(fpBeat);
+				pattern = new TwoFourPattern(fpBeat, startBeat);
 				break;
 			case 3:
-				pattern = new ThreeFourPattern(fpBeat);
+				pattern = new ThreeFourPattern(fpBeat, startBeat);
 				break;
 			case 4:
-				pattern = new FourFourPattern(fpBeat);
+				pattern = new FourFourPattern(fpBeat, startBeat);
 				break;
 			case 6:
-				pattern = new SixPattern(fpBeat);
+				pattern = new SixPattern(fpBeat, startBeat);
 				break;
 		}
 		
@@ -153,6 +155,9 @@ public class RightHand {
 		bpMin = bpM;
 		fpBeat = (int)(fps * 60.0 / (double)bpMin); // automatically update fpBeat since it depends entirely on the fps and bpMin
 		pattern.setFpBeat(fpBeat); // update it in the pattern
+	}
+	public int getbpM() {
+		return bpMin;
 	}
 	public int getMeasureNum() {
 		return measureNum;
