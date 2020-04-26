@@ -49,6 +49,8 @@ public class MusicXMLHandler extends DefaultHandler {
 	private boolean measureZero; // flag turns on if we are on measure 0
 	private double countBeats; // to add up the beats in measure 0
 	private int startBeat; // find this out if there is an implicit measure 0
+	private int beatType; // the bottom number of the time signature
+	private boolean temposAdjusted; // true if we already called adjustTempos method
 	
 	
 	public MusicXMLHandler() {
@@ -67,6 +69,7 @@ public class MusicXMLHandler extends DefaultHandler {
 		measureZero = false;
 		countBeats = 0.0;
 		startBeat = 0;
+		temposAdjusted = false;
 		
 		
 	}
@@ -256,7 +259,8 @@ public class MusicXMLHandler extends DefaultHandler {
 			bBeats = false; // set back to false
 		}
 		if(bBeatType) {
-			measure.setBeatType(Integer.parseInt(data.toString())); // set the measure's beat type value
+			beatType = Integer.parseInt(data.toString()); // save this for later; we need it for the tempo!!
+			measure.setBeatType(beatType); // set the measure's beat type value
 			bBeatType = false; // set back to false
 		}
 		// since some measures don't have a beats or beat-type listed, those measures will not set those values and will have the default values instead (0)
@@ -303,7 +307,6 @@ public class MusicXMLHandler extends DefaultHandler {
 		if(qName.equalsIgnoreCase("part")) { // if we've reached the end of the part
 			matchInstrumentToPart(); // get the instrument name for the part
 			partList.add(part); // add the part to the part list
-			adjustTempos(); // adjust the tempos for the parts we have
 		}
 		
 		
@@ -315,11 +318,14 @@ public class MusicXMLHandler extends DefaultHandler {
 	}
 	
 	private void adjustTempos() { // since the tempo isn't named at the start sometimes, we are setting it to whichever value was named later on
+		// also adjust tempos to match with the time signature!!! tempo in musicxml is quarter notes per minute, not beats per minute!!
 		for(MusicPart part : partList) { // for each part...
 			for(Measure measure : part.getMeasures()) { // for each of its measures...
 				if(measure.getTempo() <= 0) measure.setTempo(tempo); // if the tempo is less than 1, set it to whatever value we have saved in tempo
+				measure.setTempo(measure.getTempo() * beatType / 4); // fix tempo to match beat type!!
 			}
 		}
+		temposAdjusted = true; // switch this on so that we don't do it twice!
 	}
 	
 	private void matchInstrumentToPart() { // we get the instrument names before we get the parts. We can use this method to match them up
@@ -334,6 +340,9 @@ public class MusicXMLHandler extends DefaultHandler {
 	// ================================= get methods =====================================
 	
 	public List<MusicPart> getPartList(){
+		if(!temposAdjusted) {
+			adjustTempos(); // adjust the tempos; this is NOT GREAT to put it here, I just need it done once, once the parser is done parsing.
+		}
 		return partList;
 	}
 	public PieceInfo getPieceInfo() {

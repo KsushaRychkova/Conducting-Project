@@ -22,8 +22,8 @@ import javax.sound.midi.*;
 public class MyPanel extends JPanel implements Runnable {
 	
 	// constants
-    private final int DELAY = 20; // 20 millisecond delay = 50 fps
-    //private final int DELAY = 10; // 10 millisecond delay = 100 fps
+    //private final int DELAY = 20; // 20 millisecond delay = 50 fps
+    private final int DELAY = 10; // 10 millisecond delay = 100 fps
     private final Color BG_COLOR = Color.BLACK;
 	private final Color FONT_COLOR = Color.white; // color of the font
     

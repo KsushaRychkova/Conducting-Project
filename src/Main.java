@@ -76,7 +76,7 @@ public class Main {
 	    }
 	    
 		// ============================== begin the program ==============================
-		EventQueue.invokeLater(new MyWindow(partList, pieceInfo, midiFile, startBeat));
+		EventQueue.invokeLater(new MyFrame(partList, pieceInfo, midiFile, startBeat));
 		
 			
 	}
