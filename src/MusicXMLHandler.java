@@ -317,6 +317,8 @@ public class MusicXMLHandler extends DefaultHandler {
 		data.append(new String(ch, start, length));
 	}
 	
+	
+	
 	private void adjustTempos() { // since the tempo isn't named at the start sometimes, we are setting it to whichever value was named later on
 		// also adjust tempos to match with the time signature!!! tempo in musicxml is quarter notes per minute, not beats per minute!!
 		for(MusicPart part : partList) { // for each part...

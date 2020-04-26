@@ -58,13 +58,13 @@ public class RightHand {
 				
 				break;
 			case 2:
-				pattern = new TwoFourPattern(fpBeat, startBeat);
+				pattern = new TwoPattern(fpBeat, startBeat);
 				break;
 			case 3:
-				pattern = new ThreeFourPattern(fpBeat, startBeat);
+				pattern = new ThreePattern(fpBeat, startBeat);
 				break;
 			case 4:
-				pattern = new FourFourPattern(fpBeat, startBeat);
+				pattern = new FourPattern(fpBeat, startBeat);
 				break;
 			case 6:
 				pattern = new SixPattern(fpBeat, startBeat);
@@ -85,7 +85,7 @@ public class RightHand {
 		xloc = pattern.getX();
 		yloc = pattern.getY();
 		measureNum = pattern.getMeasureNum();
-		
+		System.out.println(bpMin);
 	}
 	
 	public void draw(Graphics g) {
