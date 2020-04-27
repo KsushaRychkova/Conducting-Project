@@ -203,16 +203,18 @@ public class Orchestra {
 				// dynamics
 				wordAlphas[i] = 255; // reset back to fully opaque
 				
+				
+				dynamics[i] = nextDynamics[i];
+				if(part.getMeasures().size() > measureNum) { // check if there even is a next measure
+					nextDynamics[i] = part.getMeasures().get(measureNum).getDynamics();
+				}
 				if(nextDynamics[i] == 72) { // if we're going back to normal dynamics
 					dynamicsChange[i] = 0; // we want this here so that we don't display an up in dynamics every time we're getting out of a down
 				}
 				else {
 					dynamicsChange[i] = nextDynamics[i] - dynamics[i]; // decreasing if <0, increasing if >0
 				}
-				dynamics[i] = nextDynamics[i];
-				if(part.getMeasures().size() > measureNum) { // check if there even is a next measure
-					nextDynamics[i] = part.getMeasures().get(measureNum).getDynamics();
-				}
+				
 				
 				
 				// rest measures
@@ -297,10 +299,10 @@ public class Orchestra {
 				drawDownTriangle(g, i);
 				
 				// draw the dynamics words below the arrow
-				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
+				if(nextDynamics[i] != 72) { // if we are aren't just going back to the default...
 					g.setFont(dynamicsFont);
 					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
-					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND + blockHeight + 85);
+					g.drawString(getDynamicsString(nextDynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND + blockHeight + 85);
 					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
 					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
 				}
@@ -310,10 +312,10 @@ public class Orchestra {
 				drawUpTriangle(g, i);
 				
 				// draw the dynamics words above the arrow
-				if(dynamics[i] != 72) { // if we are aren't just going back to the default...
+				if(nextDynamics[i] != 72) { // if we are aren't just going back to the default...
 					g.setFont(dynamicsFont);
 					g.setColor(new Color(255, 255, 255, wordAlphas[i])); // white, fading out
-					g.drawString(getDynamicsString(dynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND - 50);
+					g.drawString(getDynamicsString(nextDynamics[i]), LEFT_BOUND + blockLength * i + (int)(blockLength / 2) - 25, TOP_BOUND - 50);
 					if(wordAlphas[i] > 0) wordAlphas[i] = wordAlphas[i] - 2; // decrement alpha for a fade effect
 					if(wordAlphas[i] < 0) wordAlphas[i] = 0; // can't have a negative alpha!
 				}
