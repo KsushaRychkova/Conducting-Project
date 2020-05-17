@@ -331,7 +331,7 @@ public class Orchestra {
 		g.drawString("" + bpBar, 875, 675);
 		g.drawString("" + beatType, 895, 705);
 		g.drawString("Measure:   " + partList.get(0).getMeasures().get(currentMeasure).getNumber() + "       out of   " + partList.get(0).getMeasures().size(), 600, 800);
-		
+		g.drawString("Tempo:  " + partList.get(0).getMeasures().get(currentMeasure).getTempo(), 600, 900);
 		
 	}
 	
