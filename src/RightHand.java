@@ -85,7 +85,6 @@ public class RightHand {
 		xloc = pattern.getX();
 		yloc = pattern.getY();
 		measureNum = pattern.getMeasureNum();
-		System.out.println(bpMin);
 	}
 	
 	public void draw(Graphics g) {
